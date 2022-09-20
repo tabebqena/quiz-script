@@ -59,10 +59,10 @@ export class QuizHTML {
     this._fixedQuizModel = quizModel;
     this._mode = mode || HTML_MODE.CREATE;
     this._callbacks = callbacks || {
-      onSubmit: null,
+      onSubmit: undefined,
       // onCancelClicked: () => void;
-      onAddImageToQuizClicked: null,
-      onImageClicked: null
+      onAddImageToQuizClicked: undefined,
+      onImageClicked: undefined
     };
     this._layoutCreator = new QuizLayoutCreator(callbacks);
     this._headerAdapter = new HeaderAdapter(this._mode, this._quizModel, this._layoutCreator.headerDiv);

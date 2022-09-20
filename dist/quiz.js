@@ -6003,10 +6003,10 @@ var QuizHTML = /** @class */ (function () {
         this._fixedQuizModel = quizModel;
         this._mode = mode || exports.HTML_MODE.CREATE;
         this._callbacks = callbacks || {
-            onSubmit: null,
+            onSubmit: undefined,
             // onCancelClicked: () => void;
-            onAddImageToQuizClicked: null,
-            onImageClicked: null
+            onAddImageToQuizClicked: undefined,
+            onImageClicked: undefined
         };
         this._layoutCreator = new QuizLayoutCreator_1.QuizLayoutCreator(callbacks);
         this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._quizModel, this._layoutCreator.headerDiv);

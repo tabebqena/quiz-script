@@ -6,8 +6,8 @@ QuizHTML
 
 - Used to manage the htmle element of the quiz.
 - Parameters:
-  1. parent: The parent element to attach the quiz html to it.
 
+  1. parent: The parent element to attach the quiz html to it.
   default: null.
   
   Type: HTMLElement
