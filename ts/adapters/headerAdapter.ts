@@ -62,8 +62,6 @@ export class HeaderAdapter {
     updateModel(): QuizModel {
         this._quizModel.title = this._quizTitleTextarea.value;
         this._quizModel.hint = this._quizHintArea.value;
-        console.log(this._quizModel)
-
         return this._quizModel;
     }
 }

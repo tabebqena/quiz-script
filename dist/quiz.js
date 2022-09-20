@@ -4013,7 +4013,6 @@ var HeaderAdapter = /** @class */ (function () {
     HeaderAdapter.prototype.updateModel = function () {
         this._quizModel.title = this._quizTitleTextarea.value;
         this._quizModel.hint = this._quizHintArea.value;
-        console.log(this._quizModel);
         return this._quizModel;
     };
     return HeaderAdapter;
@@ -6001,14 +6000,17 @@ var QuizHTML = /** @class */ (function () {
     QuizHTML.prototype.submit = function () {
         this.statusBar.innerText = "";
         this.updateModel();
-        var valid = this._quizModel.validateFull();
-        if (valid.valid) {
+        // console.log(this._quizModel)
+        var validation = this._quizModel.validateFull();
+        console.log(validation);
+        if (validation.valid) {
             if (this._callbacks.onSubmit) {
                 this._callbacks.onSubmit(this._quizModel);
             }
         }
         else {
-            this.statusBar.innerText = valid.error;
+            this.statusBar.innerText = validation.error;
+            throw ("Invalid QuizModel: " + validation.error);
         }
     };
     QuizHTML.prototype.updateModel = function () {
