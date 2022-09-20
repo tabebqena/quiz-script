@@ -1,6 +1,6 @@
 import { Choice } from "../models/choice";
 import { ChoicesList } from "../models/choicesList";
-import { QuizModel, QUIZ_TYPES } from "../models/quizModel";
+import { QuizModel } from "../models/quizModel";
 import { createElement, createFormGroup } from "../utils";
 
 export class ChoiceAdapter {
@@ -92,16 +92,16 @@ export class ChoiceAdapter {
     collectChoices() {
         let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
         let choicesList = new ChoicesList(null);
-        if (this._quizModel.type === QUIZ_TYPES.SC || this._quizModel.type === QUIZ_TYPES.MC || this._quizModel.type === QUIZ_TYPES.SORT) {
-            for (var x = 0; x < choices.length; x++) {
-                let c = choices[x];
-                let text = c.getElementsByTagName("textarea")[0].value;
-                let choice = new Choice(x, text, null);
-                choicesList.addChoice(choice);
-            }
-        } else if (this._quizModel.type === QUIZ_TYPES.TF) {
-            // empty choice list
+        //if (this._quizModel.type === QUIZ_TYPES.SC || this._quizModel.type === QUIZ_TYPES.MC || this._quizModel.type === QUIZ_TYPES.SORT) {
+        for (var x = 0; x < choices.length; x++) {
+            let c = choices[x];
+            let text = c.getElementsByTagName("textarea")[0].value;
+            let choice = new Choice(x, text, null);
+            choicesList.addChoice(choice);
         }
+        //} else if (this._quizModel.type === QUIZ_TYPES.TF) {
+        // empty choice list
+        //}
         return choicesList;
     }
 

@@ -3825,7 +3825,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ChoiceAdapter = void 0;
 var choice_1 = __webpack_require__(/*! ../models/choice */ "./ts/models/choice.ts");
 var choicesList_1 = __webpack_require__(/*! ../models/choicesList */ "./ts/models/choicesList.ts");
-var quizModel_1 = __webpack_require__(/*! ../models/quizModel */ "./ts/models/quizModel.ts");
 var utils_1 = __webpack_require__(/*! ../utils */ "./ts/utils.ts");
 var ChoiceAdapter = /** @class */ (function () {
     function ChoiceAdapter(mode, quizModel, element) {
@@ -3908,17 +3907,16 @@ var ChoiceAdapter = /** @class */ (function () {
     ChoiceAdapter.prototype.collectChoices = function () {
         var choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
         var choicesList = new choicesList_1.ChoicesList(null);
-        if (this._quizModel.type === quizModel_1.QUIZ_TYPES.SC || this._quizModel.type === quizModel_1.QUIZ_TYPES.MC || this._quizModel.type === quizModel_1.QUIZ_TYPES.SORT) {
-            for (var x = 0; x < choices.length; x++) {
-                var c = choices[x];
-                var text = c.getElementsByTagName("textarea")[0].value;
-                var choice = new choice_1.Choice(x, text, null);
-                choicesList.addChoice(choice);
-            }
+        //if (this._quizModel.type === QUIZ_TYPES.SC || this._quizModel.type === QUIZ_TYPES.MC || this._quizModel.type === QUIZ_TYPES.SORT) {
+        for (var x = 0; x < choices.length; x++) {
+            var c = choices[x];
+            var text = c.getElementsByTagName("textarea")[0].value;
+            var choice = new choice_1.Choice(x, text, null);
+            choicesList.addChoice(choice);
         }
-        else if (this._quizModel.type === quizModel_1.QUIZ_TYPES.TF) {
-            // empty choice list
-        }
+        //} else if (this._quizModel.type === QUIZ_TYPES.TF) {
+        // empty choice list
+        //}
         return choicesList;
     };
     ChoiceAdapter.prototype.get_correct = function () {
@@ -4791,17 +4789,19 @@ var TFAdapter = /** @class */ (function (_super) {
         if (is_disabled === void 0) { is_disabled = false; }
         var index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
-        var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, "draggable": true, }, ["quiz-choice", "m-4"]);
+        var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, }, //  "draggable": true,
+        ["quiz-choice", "m-2"]);
         var row = utils_1.createElement("div", {}, ["row"]);
-        var selectDiv = utils_1.createElement("div", {}, ["col-1", "input-group", "mb-3"]);
+        var selectDiv = utils_1.createElement("div", {}, ["col-1", "m-2"]);
         var radio = utils_1.createElement("input", { "type": "radio", "dir": "auto", "name": this._quizModel.id + "_choices", "role": "choice-ctrl", "data-value": value }, []);
         if (isChecked) {
             radio.setAttribute("checked", "true");
         }
-        radio.style.cssText = "margin: 0; position: relative;        top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%);width: 1.5rem; height:1.5rem";
+        radio.style.cssText = "margin: 0; position: relative; top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%);width: 1.5rem; height:1.5rem";
         selectDiv.appendChild(radio);
         row.appendChild(selectDiv);
-        this.appendTextViewerDiv(index, row, text, {}, ["col-11"]);
+        // this.appendTextViewerDiv(index, row, text, {}, ["col-11"])
+        this.appendTextEditorDiv(index, row, text);
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
     };
@@ -5737,21 +5737,21 @@ var QuizModel = /** @class */ (function () {
         if ((!this.hint && this.hint != "") || typeof (this.hint) !== "string") {
             return { valid: false, error: "Invalid Quiz Hint" };
         }
-        if (this.type === exports.QUIZ_TYPES.SC ||
-            this.type === exports.QUIZ_TYPES.MC ||
-            this.type === exports.QUIZ_TYPES.SORT) {
-            if (!this.choicesList || this.choicesList.length == 0) {
-                return { valid: false, error: "No Choices" };
-            }
-            if (this.choicesList.length === 1) {
-                return { valid: false, error: "Only one choice" };
-            }
+        // if (this.type === QUIZ_TYPES.SC ||
+        //     this.type === QUIZ_TYPES.MC ||
+        //     this.type === QUIZ_TYPES.SORT) {
+        if (!this.choicesList || this.choicesList.length == 0) {
+            return { valid: false, error: "No Choices" };
         }
-        else if (this.type === exports.QUIZ_TYPES.TF) {
-            if (this.choicesList && this.choicesList.length > 0) {
-                return { valid: false, error: " Invalid choices length for T/F question. " };
-            }
+        if (this.choicesList.length === 1) {
+            return { valid: false, error: "Only one choice" };
         }
+        // } 
+        // else if (this.type === QUIZ_TYPES.TF) {
+        //     if (this.choicesList && this.choicesList.length > 0) {
+        //         return { valid: false, error: " Invalid choices length for T/F question. " }
+        //     }
+        // }
         for (var x = 0; x < this.choicesList.length; x++) {
             var v_1 = this.choicesList.getChoice(x).validateFull();
             if (!v_1.valid) {

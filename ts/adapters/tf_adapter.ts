@@ -13,22 +13,22 @@ export class TFAdapter extends ChoiceAdapter {
         let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
-            { "id": id, "data-id": id, "draggable": true, },
-            ["quiz-choice", "m-4"]
+            { "id": id, "data-id": id, }, //  "draggable": true,
+            ["quiz-choice", "m-2"]
         );
         let row = createElement("div", {}, ["row"]);
-        let selectDiv = createElement("div", {}, ["col-1", "input-group", "mb-3"]);
+        let selectDiv = createElement("div", {}, ["col-1", "m-2"]);
         let radio = createElement("input", { "type": "radio", "dir": "auto", "name": this._quizModel.id + "_choices", "role": "choice-ctrl", "data-value": value }, []);
         if (isChecked) {
             radio.setAttribute("checked", "true")
         }
-        radio.style.cssText = "margin: 0; position: relative;        top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%);width: 1.5rem; height:1.5rem";
+        radio.style.cssText = "margin: 0; position: relative; top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%);width: 1.5rem; height:1.5rem";
         selectDiv.appendChild(radio);
         row.appendChild(selectDiv);
-        this.appendTextViewerDiv(index, row, text, {}, ["col-11"])
+        // this.appendTextViewerDiv(index, row, text, {}, ["col-11"])
+        this.appendTextEditorDiv(index, row, text)
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
-
     }
 
 
@@ -126,7 +126,6 @@ export class TFAdapter extends ChoiceAdapter {
                     }
                 }
             }
-
             this._quizModel.correct = correct;
             let choices_list = this.collectChoices();
             this._quizModel.choicesList = choices_list;

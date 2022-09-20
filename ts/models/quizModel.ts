@@ -295,20 +295,21 @@ export class QuizModel {
         if ((!this.hint && this.hint != "") || typeof (this.hint) !== "string") {
             return { valid: false, error: "Invalid Quiz Hint" }
         }
-        if (this.type === QUIZ_TYPES.SC ||
-            this.type === QUIZ_TYPES.MC ||
-            this.type === QUIZ_TYPES.SORT) {
-            if (!this.choicesList || this.choicesList.length == 0) {
-                return { valid: false, error: "No Choices" }
-            }
-            if (this.choicesList.length === 1) {
-                return { valid: false, error: "Only one choice" }
-            }
-        } else if (this.type === QUIZ_TYPES.TF) {
-            if (this.choicesList && this.choicesList.length > 0) {
-                return { valid: false, error: " Invalid choices length for T/F question. " }
-            }
+        // if (this.type === QUIZ_TYPES.SC ||
+        //     this.type === QUIZ_TYPES.MC ||
+        //     this.type === QUIZ_TYPES.SORT) {
+        if (!this.choicesList || this.choicesList.length == 0) {
+            return { valid: false, error: "No Choices" }
         }
+        if (this.choicesList.length === 1) {
+            return { valid: false, error: "Only one choice" }
+        }
+        // } 
+        // else if (this.type === QUIZ_TYPES.TF) {
+        //     if (this.choicesList && this.choicesList.length > 0) {
+        //         return { valid: false, error: " Invalid choices length for T/F question. " }
+        //     }
+        // }
 
         for (var x = 0; x < this.choicesList.length; x++) {
             let v = this.choicesList.getChoice(x).validateFull()

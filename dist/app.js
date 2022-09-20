@@ -16,25 +16,25 @@ let m4 = QuizModel.from_json(
 // new TestViewer(viewer, [m1, m2, m3, m4,], "ANSWER", {})
 let submitBtn = document.getElementById("submitAnswerBtn");
 let model2 = null;
-let model = new QuizModel(1, "SC");
+let model = new QuizModel(1, "TF");
 let html = null;
 
 let callbacks = {
-  onSubmitClicked: (model) => {
+  onSubmit: (model) => {
     console.log(model);
-    model = QuizModel.to_json(model);
+    model = QuizModel.toJson(model);
     console.log(model);
     submitBtn.style.display = "block";
-    model2 = QuizModel.from_json(model);
+    model2 = QuizModel.fromJson(model);
     console.log(model);
 
     html = new QuizHTML(model2, "ANSWER", viewer, {});
   },
 };
-html = new QuizHTML(model, "CREATE", wrapper);
+html = new QuizHTML(model, "CREATE", wrapper, callbacks);
 
 function getAnswer() {
-  console.log(QuizModel.to_dict(model2));
+  console.log(QuizModel.toDict(model2));
   console.log(html);
 }
 
