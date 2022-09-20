@@ -202,14 +202,16 @@ export class QuizHTML {
     this.statusBar.innerText = "";
     this.updateModel();
 
-    let valid = this._quizModel.validateFull();
-    if (valid.valid) {
+    let validation = this._quizModel.validateFull();
+    if (validation.valid) {
       if (this._callbacks.onSubmit) {
         this._callbacks.onSubmit(this._quizModel);
       }
     } else {
-      this.statusBar.innerText = valid.error;
+      this.statusBar.innerText = validation.error;
+      throw ("Invalid QuizModel: " + validation.error);
     }
+
   }
 
 
