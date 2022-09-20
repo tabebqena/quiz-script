@@ -128,6 +128,8 @@ export class TFAdapter extends ChoiceAdapter {
             }
 
             this._quizModel.correct = correct;
+            let choices_list = this.collectChoices();
+            this._quizModel.choicesList = choices_list;
             return this._quizModel;
         }
 

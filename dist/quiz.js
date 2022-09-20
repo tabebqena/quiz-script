@@ -4900,6 +4900,8 @@ var TFAdapter = /** @class */ (function (_super) {
                 }
             }
             this._quizModel.correct = correct;
+            var choices_list = this.collectChoices();
+            this._quizModel.choicesList = choices_list;
             return this._quizModel;
         }
     };
@@ -6000,9 +6002,7 @@ var QuizHTML = /** @class */ (function () {
     QuizHTML.prototype.submit = function () {
         this.statusBar.innerText = "";
         this.updateModel();
-        // console.log(this._quizModel)
         var validation = this._quizModel.validateFull();
-        console.log(validation);
         if (validation.valid) {
             if (this._callbacks.onSubmit) {
                 this._callbacks.onSubmit(this._quizModel);
