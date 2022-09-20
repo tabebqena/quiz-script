@@ -89,13 +89,10 @@ export class MediaList {
         const medias: Array<MediaItem> = mediaList.mediaList
         for (var x = 0; x < medias.length; x++) {
             var m = medias[x]
-            console.log(m)
-            console.log(m.isMediaItem())
             if (!m.isMediaItem()) {
                 return { valid: false, error: "Invalid Media Item:" + m }
             }
             let v = MediaItem.validateEmpty(m.type, m.url)
-            console.log(v)
             if (!v.valid) {
                 return v
             }

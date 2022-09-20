@@ -40,9 +40,18 @@ export class ChoicesList {
         return this._choicesList.indexOf(choice)
     }
 
-    getChoice(index: number) {
+    getChoice(index: number): Choice {
         return this._choicesList[index]
     }
+
+    getChoiceById(id: any): Choice {
+        for (let index = 0; index < this._choicesList.length; index++) {
+            if (this._choicesList[index].id == id) {
+                return this._choicesList[index]
+            };
+        }
+    }
+
 
 
     clear() {

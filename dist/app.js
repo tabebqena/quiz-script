@@ -18,17 +18,14 @@ let submitBtn = document.getElementById("submitAnswerBtn");
 let model2 = null;
 let model = new QuizModel(1, "TF");
 let html = null;
+let html2 = null;
 
 let callbacks = {
   onSubmit: (model) => {
     console.log(model);
-    model = QuizModel.toJson(model);
-    console.log(model);
     submitBtn.style.display = "block";
-    model2 = QuizModel.fromJson(model);
-    console.log(model);
-
-    html = new QuizHTML(model2, "ANSWER", viewer, {});
+    model2 = model;
+    html2 = new QuizHTML(model2, "ANSWER", viewer, {});
   },
 };
 html = new QuizHTML(model, "CREATE", wrapper, callbacks);

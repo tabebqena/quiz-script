@@ -3825,6 +3825,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ChoiceAdapter = void 0;
 var choice_1 = __webpack_require__(/*! ../models/choice */ "./ts/models/choice.ts");
 var choicesList_1 = __webpack_require__(/*! ../models/choicesList */ "./ts/models/choicesList.ts");
+var quizModel_1 = __webpack_require__(/*! ../models/quizModel */ "./ts/models/quizModel.ts");
 var utils_1 = __webpack_require__(/*! ../utils */ "./ts/utils.ts");
 var ChoiceAdapter = /** @class */ (function () {
     function ChoiceAdapter(mode, quizModel, element) {
@@ -3907,16 +3908,14 @@ var ChoiceAdapter = /** @class */ (function () {
     ChoiceAdapter.prototype.collectChoices = function () {
         var choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
         var choicesList = new choicesList_1.ChoicesList(null);
-        //if (this._quizModel.type === QUIZ_TYPES.SC || this._quizModel.type === QUIZ_TYPES.MC || this._quizModel.type === QUIZ_TYPES.SORT) {
-        for (var x = 0; x < choices.length; x++) {
-            var c = choices[x];
-            var text = c.getElementsByTagName("textarea")[0].value;
-            var choice = new choice_1.Choice(x, text, null);
-            choicesList.addChoice(choice);
+        if (this._quizModel.type === quizModel_1.QUIZ_TYPES.SC || this._quizModel.type === quizModel_1.QUIZ_TYPES.MC || this._quizModel.type === quizModel_1.QUIZ_TYPES.SORT) {
+            for (var x = 0; x < choices.length; x++) {
+                var c = choices[x];
+                var text = c.getElementsByTagName("textarea")[0].value;
+                var choice = new choice_1.Choice(x, text, null);
+                choicesList.addChoice(choice);
+            }
         }
-        //} else if (this._quizModel.type === QUIZ_TYPES.TF) {
-        // empty choice list
-        //}
         return choicesList;
     };
     ChoiceAdapter.prototype.get_correct = function () {
@@ -4072,7 +4071,6 @@ exports.LearningNotesAdapter = LearningNotesAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4405,7 +4403,6 @@ exports.MediaAdapter = MediaAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4533,7 +4530,6 @@ exports.SCAdapter = SCAdapter;
   \*************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4756,7 +4752,6 @@ exports.SORTAdapter = SORTAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4775,13 +4770,19 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TFAdapter = void 0;
+var choice_1 = __webpack_require__(/*! ../models/choice */ "./ts/models/choice.ts");
 var quizHTML_1 = __webpack_require__(/*! ../quizHTML */ "./ts/quizHTML.ts");
 var utils_1 = __webpack_require__(/*! ../utils */ "./ts/utils.ts");
 var choiceAdapter_1 = __webpack_require__(/*! ./choiceAdapter */ "./ts/adapters/choiceAdapter.ts");
 var TFAdapter = /** @class */ (function (_super) {
     __extends(TFAdapter, _super);
     function TFAdapter(mode, quizModel, element) {
-        return _super.call(this, mode, quizModel, element) || this;
+        var _this = _super.call(this, mode, quizModel, element) || this;
+        if (mode === quizHTML_1.HTML_MODE.CREATE && quizModel.choicesList.length === 0) {
+            quizModel.choicesList.addChoice(new choice_1.Choice(0, "False", null));
+            quizModel.choicesList.addChoice(new choice_1.Choice(1, "True", null));
+        }
+        return _this;
     }
     TFAdapter.prototype.createEditorElement = function (text, value, isChecked, is_disabled) {
         if (text === void 0) { text = ""; }
@@ -4789,8 +4790,8 @@ var TFAdapter = /** @class */ (function (_super) {
         if (is_disabled === void 0) { is_disabled = false; }
         var index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
-        var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, }, //  "draggable": true,
-        ["quiz-choice", "m-2"]);
+        var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, "data-value": value }, //  "draggable": true,
+        ["quiz-choice", "m-2", value]);
         var row = utils_1.createElement("div", {}, ["row"]);
         var selectDiv = utils_1.createElement("div", {}, ["col-1", "m-2"]);
         var radio = utils_1.createElement("input", { "type": "radio", "dir": "auto", "name": this._quizModel.id + "_choices", "role": "choice-ctrl", "data-value": value }, []);
@@ -4814,14 +4815,14 @@ var TFAdapter = /** @class */ (function (_super) {
         var index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
         var choiceEle = utils_1.createElement("div", {
-            "id": id, "data-id": id, "draggable": true,
-        }, ["quiz-choice", "m-4"]);
+            "id": id, "data-id": id,
+        }, ["quiz-choice", "m-4", val]);
         var row = utils_1.createElement("div", {}, ["row"]);
         var selDiv = this.appendSelectDiv(row, "radio", isChecked, isDisabled);
         selDiv.firstElementChild.setAttribute("data-value", val);
-        var classes = ["col-11"];
+        var classes = ["col-10", "ms-2"];
         if (showCorrectAnswer) {
-            classes = ["col-10"];
+            classes = ["col-9", "ms-2"];
         }
         this.appendTextViewerDiv(index, row, text, {}, classes, "");
         if (showCorrectAnswer) {
@@ -4832,17 +4833,12 @@ var TFAdapter = /** @class */ (function (_super) {
     };
     TFAdapter.prototype.updateView = function () {
         for (var x = 1; x > -1; x--) {
-            var id = this._quizModel.id + "_choice_" + x;
-            var val = "true";
-            var text = "True";
-            if (x === 0) {
-                val = "false";
-            }
-            if (x === 0) {
-                text = "False";
-            }
-            var isCorrect = this._quizModel.correct.indexOf(x) != -1;
-            var isChecked = this._quizModel.answer.indexOf(x) != -1;
+            var choice = this._quizModel.choicesList.getChoiceById(x);
+            var val = (choice.id === 1) + "";
+            var text = choice.text;
+            ;
+            var isCorrect = this._quizModel.correct.indexOf(choice.id) != -1;
+            var isChecked = this._quizModel.answer.indexOf(choice.id) != -1;
             if (this._mode === quizHTML_1.HTML_MODE.ANSWER) {
                 this.createViewerElement(text, val, false, false, false, false);
             }
@@ -4900,10 +4896,24 @@ var TFAdapter = /** @class */ (function (_super) {
                 }
             }
             this._quizModel.correct = correct;
-            var choices_list = this.collectChoices();
-            this._quizModel.choicesList = choices_list;
+            this._quizModel.choicesList = this.collectChoices();
+            ;
             return this._quizModel;
         }
+    };
+    TFAdapter.prototype.collectChoices = function () {
+        // let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
+        var choicesList = this._quizModel.choicesList;
+        for (var x = 0; x <= 1; x++) {
+            var choice = choicesList.getChoiceById(x);
+            var value = (x === 1) + '';
+            var es = this._quizBodyDiv.getElementsByClassName("quiz-choice " + value);
+            if (es.length > 0) {
+                var e = es[0];
+                choice.text = e.getElementsByTagName("textarea")[0].value;
+            }
+        }
+        return choicesList;
     };
     return TFAdapter;
 }(choiceAdapter_1.ChoiceAdapter));
@@ -5130,6 +5140,14 @@ var ChoicesList = /** @class */ (function () {
     };
     ChoicesList.prototype.getChoice = function (index) {
         return this._choicesList[index];
+    };
+    ChoicesList.prototype.getChoiceById = function (id) {
+        for (var index = 0; index < this._choicesList.length; index++) {
+            if (this._choicesList[index].id == id) {
+                return this._choicesList[index];
+            }
+            ;
+        }
     };
     ChoicesList.prototype.clear = function () {
         this._choicesList = [];
@@ -5408,13 +5426,10 @@ var MediaList = /** @class */ (function () {
         var medias = mediaList.mediaList;
         for (var x = 0; x < medias.length; x++) {
             var m = medias[x];
-            console.log(m);
-            console.log(m.isMediaItem());
             if (!m.isMediaItem()) {
                 return { valid: false, error: "Invalid Media Item:" + m };
             }
             var v = mediaItem_1.MediaItem.validateEmpty(m.type, m.url);
-            console.log(v);
             if (!v.valid) {
                 return v;
             }
