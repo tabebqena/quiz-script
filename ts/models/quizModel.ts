@@ -1,7 +1,7 @@
+import { onlyUnique } from "../utils";
+import { Choice } from "./choice";
 import { ChoicesList } from './choicesList';
-import { MediaList } from "./mediaList"
-import { Choice } from "./choice"
-import { onlyUnique } from "../utils"
+import { MediaList } from "./mediaList";
 
 interface INumber {
     isInteger: Function
@@ -23,31 +23,31 @@ export class QuizModel {
     private _id: any;
     private _type: string;
     private _title: string;
-    private _media_list: MediaList;
+    private _mediaList: MediaList;
     private _hint: string;
-    private _choices_list: ChoicesList;
+    private _choicesList: ChoicesList;
     private _correct: Array<number>;
     private _answer: Array<number>;
     private _extra: any;
-    private _learning_notes: string;
+    private _learningNotes: string;
 
 
-    constructor(id, type: string, title: string, media_list: MediaList, hint: string, choices_list: ChoicesList, correct, answer, extra, learning_notes) {
+    constructor(id, type: string, title: string, mediaList: MediaList, hint: string, choicesList: ChoicesList, correct, answer, extra, learningNotes) {
         type = type.toUpperCase();
-        let valid = QuizModel.validate_empty(id, type, media_list, choices_list)
+        let valid = QuizModel.validateEmpty(id, type, mediaList, choicesList)
         if (!valid.valid) {
             throw valid
         }
         this._id = id;
         this._type = type;
         this._title = title || "";
-        this._media_list = media_list || new MediaList(null);
+        this._mediaList = mediaList || new MediaList(null);
         this._hint = hint;
-        this._choices_list = choices_list || new ChoicesList(null);
+        this._choicesList = choicesList || new ChoicesList(null);
         this._correct = correct || [];
         this._answer = answer || [];
         this._extra = extra || {};
-        this._learning_notes = learning_notes || "";
+        this._learningNotes = learningNotes || "";
     }
 
     get id() {
@@ -75,17 +75,17 @@ export class QuizModel {
         this._title = title;
     }
 
-    // media_list
-    set media_list(media_list: MediaList) {
-        if (!MediaList.is_valid(media_list)) {
-            throw "Invalid media List " + typeof (media_list) + media_list
+    // mediaList
+    set mediaList(mediaList: MediaList) {
+        if (!MediaList.isValid(mediaList)) {
+            throw "Invalid media List " + typeof (mediaList) + mediaList
         }
-        this._media_list = media_list;
+        this._mediaList = mediaList;
 
     }
 
-    get media_list(): MediaList {
-        return this._media_list;
+    get mediaList(): MediaList {
+        return this._mediaList;
     }
 
     // hint
@@ -99,27 +99,27 @@ export class QuizModel {
         return this._hint;
     }
     // choices_list
-    set choices_list(choices_list: ChoicesList) {
-        if (!choices_list.is_choice_list()) {
+    set choicesList(choicesList: ChoicesList) {
+        if (!choicesList.isChoiceList()) {
             throw "Invalid Choices List"
         }
-        var old = this.choices_list;
+        var old = this.choicesList;
 
-        for (var i; i < choices_list.length; i++) {
-            let choice = choices_list[i]
-            if (!choice.is_choice()) {
+        for (var i; i < choicesList.length; i++) {
+            let choice = choicesList[i]
+            if (!choice.isChoice()) {
                 throw "Invalid Type" + typeof (choice)
             }
-            if (!Choice.validate_empty(choice.id, choice.text, choice.media_list)) {
+            if (!Choice.validateEmpty(choice.id, choice.text, choice.mediaList)) {
                 throw "Invalid: " + choice
-                this._choices_list = old;
+                this._choicesList = old;
             }
         }
-        this._choices_list = choices_list;
+        this._choicesList = choicesList;
     }
 
-    get choices_list() {
-        return this._choices_list;
+    get choicesList() {
+        return this._choicesList;
     }
 
     // correct
@@ -139,10 +139,10 @@ export class QuizModel {
                 }
             }
 
-            if (correct.length > this.choices_list.length) {
+            if (correct.length > this.choicesList.length) {
                 throw "Invalid correct length: " + correct.length
-                + "choices_list length: "
-                + this.choices_list.length
+                + "choicesList length: "
+                + this.choicesList.length
             }
         } else if (this.type === QUIZ_TYPES.TF) {
             if (correct === []) {
@@ -171,31 +171,31 @@ export class QuizModel {
         return this._correct;
     }
 
-    public get learning_notes(): string {
-        return this._learning_notes;
+    public get learningNotes(): string {
+        return this._learningNotes;
     }
-    public set learning_notes(value: string) {
-        this._learning_notes = value;
+    public set learningNotes(value: string) {
+        this._learningNotes = value;
     }
 
-    remove_from_correct(choice_id) {
+    removeFromCorrect(choiceId) {
         if (this.type === QUIZ_TYPES.SC || this.type === QUIZ_TYPES.MC) {
-            this.correct.splice(this.correct.indexOf(choice_id), 1)
+            this.correct.splice(this.correct.indexOf(choiceId), 1)
             this.correct = this.correct.filter(onlyUnique)
         } else if (this.type === QUIZ_TYPES.TF) {
             this.correct = [0]
         }
     }
 
-    add_to_correct(choice_id) {
+    addToCorrect(choiceId) {
         if (this.type === QUIZ_TYPES.SC || this.type === QUIZ_TYPES.MC) {
-            if (!Number.isInteger(choice_id)) {
+            if (!Number.isInteger(choiceId)) {
                 throw "Invalid correct id type"
             }
-            if (choice_id >= this.choices_list.length) {
-                throw "Invalid correct value >" + this.choices_list.length
+            if (choiceId >= this.choicesList.length) {
+                throw "Invalid correct value >" + this.choicesList.length
             }
-            this.correct.push(choice_id)
+            this.correct.push(choiceId)
             this.correct = this.correct.filter(onlyUnique)
         } else if (this.type === QUIZ_TYPES.TF) {
             this.correct = [1]
@@ -219,8 +219,8 @@ export class QuizModel {
                     throw "Invalid Answer type " + a + " " + typeof (a)
                 }
             }
-            if (answer.length > this.choices_list.length) {
-                throw "Invalid answer " + answer + " choices_list: " + this.choices_list
+            if (answer.length > this.choicesList.length) {
+                throw "Invalid answer " + answer + " choicesList: " + this.choicesList
             }
 
         } else if (this.type === QUIZ_TYPES.TF) {
@@ -257,7 +257,7 @@ export class QuizModel {
         return this._extra;
     }
 
-    static validate_empty(id, type, media_list, choices_list,) {
+    static validateEmpty(id, type, mediaList, choicesList,) {
         if (!id) {
             return { valid: false, error: "Invalid ID" }
         }
@@ -267,14 +267,14 @@ export class QuizModel {
         if (!QUIZ_TYPES.hasOwnProperty(type)) {
             return { valid: false, error: "Invalid Type: " + type }
         }
-        if (media_list) {
-            let v = MediaList.is_valid(media_list)
+        if (mediaList) {
+            let v = MediaList.isValid(mediaList)
             if (!v.valid) {
                 return { valid: false, error: "Invalid Media List>" + v.error }
             }
         }
-        if (choices_list) {
-            let v = ChoicesList.is_valid(choices_list)
+        if (choicesList) {
+            let v = ChoicesList.isValid(choicesList)
             if (!v.valid) {
                 return { valid: false, error: "Invalid Choices List> " + v.error }
             }
@@ -282,8 +282,8 @@ export class QuizModel {
         return { valid: true }
     }
 
-    validate_full() {
-        let v = QuizModel.validate_empty(this.id, this.type, this.media_list, this.choices_list)
+    validateFull() {
+        let v = QuizModel.validateEmpty(this.id, this.type, this.mediaList, this.choicesList)
         if (!v.valid) {
             return v
         }
@@ -298,20 +298,20 @@ export class QuizModel {
         if (this.type === QUIZ_TYPES.SC ||
             this.type === QUIZ_TYPES.MC ||
             this.type === QUIZ_TYPES.SORT) {
-            if (!this.choices_list || this.choices_list.length == 0) {
+            if (!this.choicesList || this.choicesList.length == 0) {
                 return { valid: false, error: "No Choices" }
             }
-            if (this.choices_list.length === 1) {
+            if (this.choicesList.length === 1) {
                 return { valid: false, error: "Only one choice" }
             }
         } else if (this.type === QUIZ_TYPES.TF) {
-            if (this.choices_list && this.choices_list.length > 0) {
+            if (this.choicesList && this.choicesList.length > 0) {
                 return { valid: false, error: " Invalid choices length for T/F question. " }
             }
         }
 
-        for (var x = 0; x < this.choices_list.length; x++) {
-            let v = this.choices_list.get_choice(x).validate_full()
+        for (var x = 0; x < this.choicesList.length; x++) {
+            let v = this.choicesList.getChoice(x).validateFull()
             if (!v.valid) {
                 return { valid: false, error: "Invalid choice: " + x + "error: " + v.error }
             }
@@ -342,44 +342,44 @@ export class QuizModel {
         return { valid: true }
     }
 
-    static to_dict(quiz: QuizModel) {
+    static toDict(quiz: QuizModel) {
         return {
             'id': quiz.id,
             'type': quiz.type,
             'title': quiz.title,
             'hint': quiz.hint,
-            'choices': quiz.choices_list.to_list(),
-            'media_list': quiz.media_list.to_list(),
+            'choices': quiz.choicesList.toList(),
+            'mediaList': quiz.mediaList.toList(),
             'correct': quiz.correct,
             'answer': quiz.answer,
             'extra': quiz.extra,
-            "learning_notes": quiz.learning_notes
+            "learningNotes": quiz.learningNotes
         }
     }
 
-    static to_json(quiz) {
-        return JSON.stringify(QuizModel.to_dict(quiz))
+    static toJson(quiz) {
+        return JSON.stringify(QuizModel.toDict(quiz))
     }
 
-    static from_dict(d) {
+    static fromDict(d) {
 
-        let media_list = new MediaList(d.media_list)
-        let choices_list = new ChoicesList(d.choices)
+        let mediaList = new MediaList(d.mediaList)
+        let choicesList = new ChoicesList(d.choices)
         return new QuizModel(
             d.id,
             d.type,
             d.title,
-            media_list,
+            mediaList,
             d.hint,
-            choices_list,
+            choicesList,
             d.correct,
             d.answer,
             d.extra,
-            d.learning_notes)
+            d.learningNotes)
     }
 
-    static from_json(json) {
-        return QuizModel.from_dict(JSON.parse(json))
+    static fromJson(json) {
+        return QuizModel.fromDict(JSON.parse(json))
     }
 
 }

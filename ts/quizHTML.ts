@@ -30,22 +30,22 @@ export class QuizHTML {
 
 
   private _mode: string;
-  private _header_adapter: HeaderAdapter;
+  private _headerAdapter: HeaderAdapter;
 
   private _callbacks: ICallbacks;
 
-  private _layout_creator: QuizLayoutCreator;
-  private _learning_notes_adapter: LearningNotesAdapter;
-  private _choices_adapter: ChoiceAdapter;
-  private _media_adapter: MediaAdapter;
+  private _layoutCreator: QuizLayoutCreator;
+  private _learningNotesAdapter: LearningNotesAdapter;
+  private _choicesAdapter: ChoiceAdapter;
+  private _mediaAdapter: MediaAdapter;
   private _parent: any;
 
-  public get layout_creator(): QuizLayoutCreator {
-    return this._layout_creator;
+  public get layoutCreator(): QuizLayoutCreator {
+    return this._layoutCreator;
   }
 
   public get element() {
-    return this._layout_creator.element;
+    return this._layoutCreator.element;
   }
 
   constructor(
@@ -57,39 +57,44 @@ export class QuizHTML {
     this._parent = parent;
     this._quizModel = quizModel;
     this._fixedQuizModel = quizModel;
-    this._mode = mode;
-    this._callbacks = callbacks;
-    this._layout_creator = new QuizLayoutCreator(callbacks);
-    this._header_adapter = new HeaderAdapter(this._mode, this._quizModel, this._layout_creator.header_div);
-    this._choices_adapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.layout_creator.quiz_body_div)
-    this._learning_notes_adapter = new LearningNotesAdapter(this._mode, this._quizModel, this._layout_creator.learning_notes_bar);
+    this._mode = mode || HTML_MODE.CREATE;
+    this._callbacks = callbacks || {
+      onSubmit: null,
+      // onCancelClicked: () => void;
+      onAddImageToQuizClicked: null,
+      onImageClicked: null
+    };
+    this._layoutCreator = new QuizLayoutCreator(callbacks);
+    this._headerAdapter = new HeaderAdapter(this._mode, this._quizModel, this._layoutCreator.headerDiv);
+    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.layoutCreator.quizBodyDiv)
+    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._quizModel, this._layoutCreator.learningNotesBar);
     if (callbacks.onAddImageToQuizClicked || callbacks.onImageClicked) {
-      this._media_adapter = new MediaAdapter(
+      this._mediaAdapter = new MediaAdapter(
         this._mode,
         this._quizModel,
-        this._layout_creator.media_div,
+        this._layoutCreator.mediaDiv,
         this._callbacks
       );
     }
-    this.update_view();
+    this.updateView();
     if (parent) {
       parent.appendChild(this.element);
     }
   }
 
   reset() {
-    this._parent.removeChild(this.layout_creator.element);
-    this._layout_creator = new QuizLayoutCreator(this._callbacks);
-    this._header_adapter = new HeaderAdapter(this._mode, this._fixedQuizModel, this._layout_creator.header_div);
-    this._choices_adapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.layout_creator.quiz_body_div)
-    this._learning_notes_adapter = new LearningNotesAdapter(this._mode, this._fixedQuizModel, this._layout_creator.learning_notes_bar);
+    this._parent.removeChild(this.layoutCreator.element);
+    this._layoutCreator = new QuizLayoutCreator(this._callbacks);
+    this._headerAdapter = new HeaderAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.headerDiv);
+    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.layoutCreator.quizBodyDiv)
+    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.learningNotesBar);
     if (this._callbacks.onAddImageToQuizClicked || this._callbacks.onImageClicked) {
-      this._media_adapter = new MediaAdapter(this._mode,
+      this._mediaAdapter = new MediaAdapter(this._mode,
         this._quizModel,
-        this._layout_creator.media_div,
+        this._layoutCreator.mediaDiv,
         this._callbacks);
     }
-    this.update_view();
+    this.updateView();
     if (this._parent) {
       this._parent.appendChild(this.element);
     }
@@ -113,32 +118,32 @@ export class QuizHTML {
   }
 
 
-  add_choice() {
+  addChoice() {
     if (this._quizModel.type !== QUIZ_TYPES.TF) {
-      this._choices_adapter.append_empty_choice();
+      this._choicesAdapter.appendEmptyChoice();
     }
   }
 
-  add_media_item(type, url) {
-    this._media_adapter.add_media_item(type, url);
+  addMediaItem(type, url) {
+    this._mediaAdapter.addMediaItem(type, url);
     //this._quiz_header_editor_adapter.add_media_item(type, url)
   }
 
-  private update_view() {
-    this._header_adapter.update_view();
-    if (this._media_adapter) {
-      this._media_adapter.update_view();
+  private updateView() {
+    this._headerAdapter.updateView();
+    if (this._mediaAdapter) {
+      this._mediaAdapter.updateView();
     }
-    this._choices_adapter.update_view();
+    this._choicesAdapter.updateView();
 
     if (this.mode === HTML_MODE.CREATE) {
-      this._learning_notes_adapter.update_view();
+      this._learningNotesAdapter.updateView();
       if (
         this._quizModel.type === QUIZ_TYPES.SC ||
         this._quizModel.type === QUIZ_TYPES.MC ||
         this._quizModel.type === QUIZ_TYPES.SORT
       ) {
-        var sortable = new Sortable(this.layout_creator.quiz_body_div, {
+        var sortable = new Sortable(this.layoutCreator.quizBodyDiv, {
           sort: true, // sorting inside list
           animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
           draggable: ".quiz-choice", // Specifies which items inside the element should be draggable
@@ -150,7 +155,7 @@ export class QuizHTML {
       this.mode === HTML_MODE.UPDATE_ANSWER
     ) {
       if (this._quizModel.type === QUIZ_TYPES.SORT) {
-        var sortable = new Sortable(this.layout_creator.quiz_body_div, {
+        var sortable = new Sortable(this.layoutCreator.quizBodyDiv, {
           sort: true, // sorting inside list
           animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
           draggable: ".quiz-choice", // Specifies which items inside the element should be draggable
@@ -158,38 +163,38 @@ export class QuizHTML {
         });
       }
     } else if (this.mode === HTML_MODE.SHOW_RESULT) {
-      this._learning_notes_adapter.update_view();
+      this._learningNotesAdapter.updateView();
     }
   }
 
   submit() {
-    this.layout_creator.status_bar.innerText = "";
+    this.layoutCreator.statusBar.innerText = "";
     this.updateModel();
 
-    let valid = this._quizModel.validate_full();
+    let valid = this._quizModel.validateFull();
     if (valid.valid) {
       if (this._callbacks.onSubmit) {
         this._callbacks.onSubmit(this._quizModel);
       }
     } else {
-      this.layout_creator.status_bar.innerText = valid.error;
+      this.layoutCreator.statusBar.innerText = valid.error;
     }
   }
 
 
   updateModel() {
     if (this.mode === HTML_MODE.CREATE) {
-      this._quizModel = this._header_adapter.update_model();
-      this._quizModel = this._choices_adapter.update_model(this._quizModel);
-      this._quizModel = this._learning_notes_adapter.update_model();
-      if (this._media_adapter) {
-        this._quizModel = this._media_adapter.update_model();
+      this._quizModel = this._headerAdapter.updateModel();
+      this._quizModel = this._choicesAdapter.updateModel(this._quizModel);
+      this._quizModel = this._learningNotesAdapter.updateModel();
+      if (this._mediaAdapter) {
+        this._quizModel = this._mediaAdapter.updateModel();
       }
     } else if (
       this.mode === HTML_MODE.ANSWER ||
       this.mode === HTML_MODE.UPDATE_ANSWER
     ) {
-      this._quizModel = this._choices_adapter.update_model(this._quizModel); // this._choices_viewer_adapter.update_model(this._quizModel)
+      this._quizModel = this._choicesAdapter.updateModel(this._quizModel); // this._choices_viewer_adapter.update_model(this._quizModel)
     } else if (this.mode === HTML_MODE.SHOW_RESULT) {
       /* this._quizModel = this._choices_viewer_adapter.update_model(this._quizModel) */
     }

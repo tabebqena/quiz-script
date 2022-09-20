@@ -9,7 +9,7 @@ export class MediaItem {
     private _type: any;
     private _url: any;
     constructor(type, url) {
-        const valid = MediaItem.validate_empty(type, url)
+        const valid = MediaItem.validateEmpty(type, url)
         if (!valid.valid) {
             throw valid.error
         }
@@ -39,11 +39,11 @@ export class MediaItem {
         return this._url
     }
 
-    is_media_item() {
+    isMediaItem() {
         return true
     }
 
-    static validate_empty(type, url) {
+    static validateEmpty(type, url) {
         if (typeof (type) !== "string") {
             return {
                 valid: false, error: "Invalid type" + typeof (type)
@@ -54,8 +54,8 @@ export class MediaItem {
 
     }
 
-    validate_full() {
-        let valid = MediaItem.validate_empty(this.type, this.url)
+    validateFull() {
+        let valid = MediaItem.validateEmpty(this.type, this.url)
         if (!valid.valid) {
             return valid
         }
@@ -73,30 +73,30 @@ export class MediaItem {
         return m instanceof (MediaItem)
     }
 
-    static from_dict(d) {
+    static fromDict(d) {
         return new MediaItem(d["type"], d["url"])
     }
 
-    static from_json(j) {
+    static fromJson(j) {
         const d = JSON.parse(j)
-        return MediaItem.from_dict(d)
+        return MediaItem.fromDict(d)
     }
 
     static from(input) {
         try {
             const j = JSON.stringify(input)
-            return MediaItem.from_json(j)
+            return MediaItem.fromJson(j)
         } catch (e) {
-            return MediaItem.from_dict(input)
+            return MediaItem.fromDict(input)
         }
     }
 
-    static to_dict(mediaItem) {
+    static toDict(mediaItem) {
         return { "type": mediaItem.type, "url": mediaItem.url }
     }
 
-    static to_json(json) {
-        return JSON.stringify(MediaItem.to_dict(json))
+    static toJson(json) {
+        return JSON.stringify(MediaItem.toDict(json))
     }
 
 

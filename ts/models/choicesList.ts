@@ -2,102 +2,102 @@ import { onlyUnique } from '../utils';
 import { Choice } from './choice';
 
 export class ChoicesList {
-    private _choices_list: Choice[];
+    private _choicesList: Choice[];
 
     constructor(input) {
-        this._choices_list = []
+        this._choicesList = []
         if (input) {
             if (input.constructor === Array) {
-                this.from_list(input)
+                this.fromList(input)
             } else {
                 try {
                     JSON.parse(input)
-                    this.from_json(input)
+                    this.fromJson(input)
                 } catch (err) {
                     throw "Invalid input " + typeof (input)
                 }
             }
         } else {
-            this._choices_list = []
+            this._choicesList = []
         }
     }
 
 
-    add_choice(choice: Choice) {
-        if (!choice.is_choice) {
+    addChoice(choice: Choice) {
+        if (!choice.isChoice) {
             throw "Invalid choice" + choice
         }
 
-        this._choices_list.push(choice)
-        this._choices_list = this.choices_list.filter(onlyUnique)
+        this._choicesList.push(choice)
+        this._choicesList = this.choicesList.filter(onlyUnique)
     }
 
-    remove_choice(index: number) {
-        this._choices_list.splice(index, 1);
+    removeChoice(index: number) {
+        this._choicesList.splice(index, 1);
     }
 
-    get_choice_index(choice: Choice) {
-        return this._choices_list.indexOf(choice)
+    getChoiceIndex(choice: Choice) {
+        return this._choicesList.indexOf(choice)
     }
 
-    get_choice(index: number) {
-        return this._choices_list[index]
+    getChoice(index: number) {
+        return this._choicesList[index]
     }
 
 
     clear() {
-        this._choices_list = []
+        this._choicesList = []
     }
 
-    get choices_list() {
-        return this._choices_list
+    get choicesList() {
+        return this._choicesList
     }
 
-    from_list(list) {
+    fromList(list) {
         for (var x = 0; x < list.length; x++) {
-            var choice = Choice.from_dict(list[x])
-            this.add_choice(choice)
+            var choice = Choice.fromDict(list[x])
+            this.addChoice(choice)
         }
-        return this.choices_list;
+        return this.choicesList;
     }
 
-    from_json(j) {
+    fromJson(j) {
         const list = JSON.parse(j)
-        return this.from_list(list)
+        return this.fromList(list)
     }
 
-    to_list() {
+    toList() {
         const res = []
-        const choices = this.choices_list;
+        const choices = this.choicesList;
         for (var x = 0; x < choices.length; x++) {
-            res.push(Choice.to_dict(choices[x]))
+            res.push(Choice.toDict(choices[x]))
         }
         return res;
     }
 
-    to_json() {
-        return JSON.stringify(this.to_list())
+    toJson() {
+        return JSON.stringify(this.toList())
     }
 
-    is_choice_list() {
+    isChoiceList() {
         return true
     }
 
     get length() {
-        return this._choices_list.length
+        return this._choicesList.length
     }
 
-    static is_valid(choices_list: ChoicesList) {
-        if (!choices_list.is_choice_list()) {
+    static isValid(choicesList: ChoicesList) {
+        if (!choicesList.isChoiceList()) {
             return { valid: false, error: "Invalid Choices List" }
         }
-        const choices: Array<Choice> = choices_list.choices_list
+        const choices: Array<Choice> = choicesList.choicesList
         for (var x = 0; x < choices.length; x++) {
             var m = choices[x]
-            if (!m.is_choice) {
+            if (!m.isChoice) {
                 return { valid: false, error: "Invalid Choice" + m }
             }
-            let v = Choice.validate_empty(m.id, m.text, m.media_list)
+            let v = Choice.validateEmpty(m.id, m.text, m.mediaList)
             if (!v.valid) {
                 return v
             }

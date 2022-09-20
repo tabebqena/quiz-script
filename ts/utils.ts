@@ -12,18 +12,18 @@ export function allowDrop(ev) {
 
 }
 
-export function on_choice_dragstart(ev) {
+export function onChoiceDragStart(ev) {
     let target = ev.target
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
-export function drop_choice(ev) {
+export function dropChoice(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
 }
 
-export function delete_choice(ev) {
+export function deleteChoice(ev) {
     ev.target.parentElement.parentElement.parentElement.removeChild(ev.target.parentElement.parentElement)
 
 }
@@ -42,31 +42,31 @@ export function createElement(tag, attrs = {}, classes = [], cssText = ""): HTML
     return ele;
 }
 
-export function createFormGroup(id, label, ctrl_tag, ctrl_attrs, help): HTMLElement {
+export function createFormGroup(id, label, ctrlTag, ctrlAttrs, help): HTMLElement {
     let ele = createElement("div", {}, ["form-group"])
-    let label_ele = createElement("label", { "for": id + "_ctrl", "data-type": "ctrl-label" })
-    label_ele.innerHTML = label;
-    if (!ctrl_attrs) {
-        ctrl_attrs = {}
+    let labelEle = createElement("label", { "for": id + "_ctrl", "data-type": "ctrl-label" })
+    labelEle.innerHTML = label;
+    if (!ctrlAttrs) {
+        ctrlAttrs = {}
     }
-    ctrl_attrs["id"] = id + "_ctrl"
-    ctrl_attrs["aria-describedby"] = id + "_help"
-    ctrl_attrs["data-type"] = "ctrl"
+    ctrlAttrs["id"] = id + "_ctrl"
+    ctrlAttrs["aria-describedby"] = id + "_help"
+    ctrlAttrs["data-type"] = "ctrl"
 
-    let control_ele = createElement(ctrl_tag, ctrl_attrs, ["form-control"])
-    let help_ele = createElement("small", { "data-type": "ctrl-help" }, ["form-text", "text-muted"])
-    help_ele.innerHTML = help
+    let controlEle = createElement(ctrlTag, ctrlAttrs, ["form-control"])
+    let helpEle = createElement("small", { "data-type": "ctrl-help" }, ["form-text", "text-muted"])
+    helpEle.innerHTML = help
 
-    ele.appendChild(label_ele)
-    ele.appendChild(control_ele)
-    ele.appendChild(help_ele)
+    ele.appendChild(labelEle)
+    ele.appendChild(controlEle)
+    ele.appendChild(helpEle)
 
     return ele
 }
 
 
 
-export function handle_drag(event) {
+export function handleDrag(event) {
     const selectedItem = event.target
     const list = selectedItem.parentNode
     const x = event.clientX
@@ -82,7 +82,7 @@ export function handle_drag(event) {
     }
 }
 
-export function handle_drop(event) {
+export function handleDrop(event) {
     event.target.classList.remove('drag-sort-active');
 }
 
@@ -101,7 +101,7 @@ export function shuffle(array) {
     return array;
 }
 
-export function get_random_str(length = 5) {
+export function getRandomStr(length = 5) {
     return Math.random().toString(36).substring(length);
 }
 

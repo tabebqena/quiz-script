@@ -1,5 +1,5 @@
 import { QuizModel } from "../models/quizModel";
-import { HTML_MODE, QuizHTML } from "../quizHTML";
+import { HTML_MODE } from "../quizHTML";
 import { createElement } from "../utils";
 import { ChoiceAdapter } from "./choiceAdapter";
 
@@ -7,77 +7,77 @@ export class MCAdapter extends ChoiceAdapter {
     constructor(mode: string, quizModel: QuizModel, element: HTMLDivElement) {
         super(mode, quizModel, element);
     }
-    create_editor_element(text: string = "", is_checked: boolean = false) {
-        let index = this._quiz_body_div.children.length;
+    createEditorElement(text: string = "", isChecked: boolean = false) {
+        let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
-        let choice_ele = createElement("div",
+        let choiceEle = createElement("div",
             { "id": id, "data-id": id, "draggable": true, },
             ["quiz-choice", "m-4"]
         );
         let row = createElement("div", {}, ["row"]);
 
-        this.append_drag_div(row)
-        this.append_select_div(row, "checkbox", is_checked)
-        this.append_text_editor_div(index, row, text)
-        this.append_del_div(row, choice_ele)
+        this.appendDragDiv(row)
+        this.appendSelectDiv(row, "checkbox", isChecked)
+        this.appendTextEditorDiv(index, row, text)
+        this.appendDelDiv(row, choiceEle)
 
-        choice_ele.appendChild(row);
-        this._quiz_body_div.appendChild(choice_ele);
+        choiceEle.appendChild(row);
+        this._quizBodyDiv.appendChild(choiceEle);
     }
 
 
-    append_empty_choice() {
-        this.create_editor_element()
+    appendEmptyChoice() {
+        this.createEditorElement()
     }
 
 
-    create_viewer_element(text: string = "", is_checked: boolean = false, is_correct: boolean = false, is_disabled: boolean = false, show_correct_answer: boolean = false) {
-        let index = this._quiz_body_div.children.length;
+    createViewerElement(text: string = "", isChecked: boolean = false, isCorrect: boolean = false, isDisabled: boolean = false, showCorrectAnswer: boolean = false) {
+        let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
-        let choice_ele = createElement("div",
+        let choiceEle = createElement("div",
             {
                 "id": id, "data-id": id, "draggable": true,
             },
             ["quiz-choice", "m-4"]
         );
         let row = createElement("div", {}, ["row"]);
-        this.append_select_div(row, "checkbox", is_checked, is_disabled)
+        this.appendSelectDiv(row, "checkbox", isChecked, isDisabled)
         let classes = ["col-11"]
-        if (show_correct_answer) {
+        if (showCorrectAnswer) {
             classes = ["col-10"]
         }
-        this.append_text_viewer_div(index, row, text, {}, classes, "")
+        this.appendTextViewerDiv(index, row, text, {}, classes, "")
 
-        if (show_correct_answer) {
-            this.append_correct_div(row, is_checked, is_correct)
+        if (showCorrectAnswer) {
+            this.appendCorrectDiv(row, isChecked, isCorrect)
         }
 
-        choice_ele.appendChild(row);
-        this._quiz_body_div.appendChild(choice_ele);
+        choiceEle.appendChild(row);
+        this._quizBodyDiv.appendChild(choiceEle);
     }
 
 
-    update_view() {
-        for (var x = 0; x < this._quizModel.choices_list.length; x++) {
-            let text = this._quizModel.choices_list.get_choice(x).text;
-            let is_correct = this._quizModel.correct.indexOf(x) != -1;
-            let is_checked = this._quizModel.answer.indexOf(x) != -1;
+    updateView() {
+        for (var x = 0; x < this._quizModel.choicesList.length; x++) {
+            let text = this._quizModel.choicesList.getChoice(x).text;
+            let isCorrect = this._quizModel.correct.indexOf(x) != -1;
+            let isChecked = this._quizModel.answer.indexOf(x) != -1;
             if (this._mode === HTML_MODE.ANSWER) {
-                this.create_viewer_element(text, false, false, false, false);
+                this.createViewerElement(text, false, false, false, false);
             } else if (this._mode === HTML_MODE.UPDATE_ANSWER) {
-                this.create_viewer_element(text, is_checked);
+                this.createViewerElement(text, isChecked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.create_editor_element(text, is_checked)
+                this.createEditorElement(text, isChecked)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
-                this.create_viewer_element(text, is_checked, is_correct, true, true);
+                this.createViewerElement(text, isChecked, isCorrect, true, true);
             }
         }
     }
 
-    update_model(quizModel: QuizModel): QuizModel {
+    updateModel(quizModel: QuizModel): QuizModel {
         this._quizModel = quizModel;
-        let choices = this._quiz_body_div.getElementsByClassName("quiz-choice");
+        let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
         if (this._mode === HTML_MODE.ANSWER || this._mode === HTML_MODE.UPDATE_ANSWER) {
             let answer = [];
             for (var x = 0; x < choices.length; x++) {
@@ -95,9 +95,9 @@ export class MCAdapter extends ChoiceAdapter {
             this._quizModel.answer = answer;
             return this._quizModel;
         } else if (this._mode === HTML_MODE.CREATE) {
-            let choices_list = this.collect_choices();
+            let choices_list = this.collectChoices();
             let correct = this.get_correct()
-            this._quizModel.choices_list = choices_list;
+            this._quizModel.choicesList = choices_list;
             this._quizModel.correct = correct;
             return this._quizModel;
         }

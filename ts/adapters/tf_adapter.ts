@@ -1,5 +1,5 @@
 import { QuizModel } from "../models/quizModel";
-import { HTML_MODE, QuizHTML } from "../quizHTML";
+import { HTML_MODE } from "../quizHTML";
 import { createElement } from "../utils";
 import { ChoiceAdapter } from "./choiceAdapter";
 
@@ -9,62 +9,59 @@ export class TFAdapter extends ChoiceAdapter {
     }
 
 
-    create_editor_element(text: string = "", value: string, is_checked: boolean = false, is_disabled: boolean = false) {
-        let index = this._quiz_body_div.children.length;
+    createEditorElement(text: string = "", value: string, isChecked: boolean = false, is_disabled: boolean = false) {
+        let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
-        let choice_ele = createElement("div",
+        let choiceEle = createElement("div",
             { "id": id, "data-id": id, "draggable": true, },
             ["quiz-choice", "m-4"]
         );
         let row = createElement("div", {}, ["row"]);
-        let select_div = createElement("div", {}, ["col-1", "input-group", "mb-3"]);
+        let selectDiv = createElement("div", {}, ["col-1", "input-group", "mb-3"]);
         let radio = createElement("input", { "type": "radio", "dir": "auto", "name": this._quizModel.id + "_choices", "role": "choice-ctrl", "data-value": value }, []);
-        if (is_checked) {
+        if (isChecked) {
             radio.setAttribute("checked", "true")
         }
         radio.style.cssText = "margin: 0; position: relative;        top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%);width: 1.5rem; height:1.5rem";
-        select_div.appendChild(radio);
-        row.appendChild(select_div);
-
-
-
-        this.append_text_viewer_div(index, row, text, {}, ["col-11"])
-        choice_ele.appendChild(row);
-        this._quiz_body_div.appendChild(choice_ele);
+        selectDiv.appendChild(radio);
+        row.appendChild(selectDiv);
+        this.appendTextViewerDiv(index, row, text, {}, ["col-11"])
+        choiceEle.appendChild(row);
+        this._quizBodyDiv.appendChild(choiceEle);
 
     }
 
 
-    create_viewer_element(text: string = "", val: string, is_checked: boolean = false, is_correct: boolean = false, is_disabled: boolean = false, show_correct_answer: boolean = false) {
-        let index = this._quiz_body_div.children.length;
+    createViewerElement(text: string = "", val: string, isChecked: boolean = false, isCorrect: boolean = false, isDisabled: boolean = false, showCorrectAnswer: boolean = false) {
+        let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
-        let choice_ele = createElement("div",
+        let choiceEle = createElement("div",
             {
                 "id": id, "data-id": id, "draggable": true,
             },
             ["quiz-choice", "m-4"]
         );
         let row = createElement("div", {}, ["row"]);
-        let sel_div = this.append_select_div(row, "radio", is_checked, is_disabled)
-        sel_div.firstElementChild.setAttribute("data-value", val)
+        let selDiv = this.appendSelectDiv(row, "radio", isChecked, isDisabled)
+        selDiv.firstElementChild.setAttribute("data-value", val)
 
         let classes = ["col-11"]
-        if (show_correct_answer) {
+        if (showCorrectAnswer) {
             classes = ["col-10"]
         }
 
-        this.append_text_viewer_div(index, row, text, {}, classes, "")
+        this.appendTextViewerDiv(index, row, text, {}, classes, "")
 
-        if (show_correct_answer) {
-            this.append_correct_div(row, is_checked, is_correct)
+        if (showCorrectAnswer) {
+            this.appendCorrectDiv(row, isChecked, isCorrect)
         }
 
-        choice_ele.appendChild(row);
-        this._quiz_body_div.appendChild(choice_ele);
+        choiceEle.appendChild(row);
+        this._quizBodyDiv.appendChild(choiceEle);
     }
 
 
-    update_view() {
+    updateView() {
         for (var x = 1; x > -1; x--) {
             let id = this._quizModel.id + "_choice_" + x;
             let val = "true";
@@ -75,24 +72,24 @@ export class TFAdapter extends ChoiceAdapter {
             if (x === 0) {
                 text = "False"
             }
-            let is_correct = this._quizModel.correct.indexOf(x) != -1;
-            let is_checked = this._quizModel.answer.indexOf(x) != -1;
+            let isCorrect = this._quizModel.correct.indexOf(x) != -1;
+            let isChecked = this._quizModel.answer.indexOf(x) != -1;
             if (this._mode === HTML_MODE.ANSWER) {
-                this.create_viewer_element(text, val, false, false, false, false);
+                this.createViewerElement(text, val, false, false, false, false);
             } else if (this._mode === HTML_MODE.UPDATE_ANSWER) {
-                this.create_viewer_element(text, val, is_checked);
+                this.createViewerElement(text, val, isChecked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.create_editor_element(text, val, is_correct)
+                this.createEditorElement(text, val, isCorrect)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
-                this.create_viewer_element(text, val, is_checked, is_correct, true, true);
+                this.createViewerElement(text, val, isChecked, isCorrect, true, true);
             }
         }
     }
 
-    update_model(quizModel: QuizModel): QuizModel {
+    updateModel(quizModel: QuizModel): QuizModel {
         this._quizModel = quizModel;
-        let choices = this._quiz_body_div.getElementsByClassName("quiz-choice");
+        let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
         if (this._mode === HTML_MODE.ANSWER || this._mode === HTML_MODE.UPDATE_ANSWER) {
             let answer = [];
             for (var x = 0; x < choices.length; x++) {

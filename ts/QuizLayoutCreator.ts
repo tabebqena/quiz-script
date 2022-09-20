@@ -1,58 +1,57 @@
-import { QUIZ_TYPES } from "./models/quizModel";
 import { createElement } from "./utils";
 
 export class QuizLayoutCreator {
     private _element: HTMLFormElement;
 
-    private _header_div: HTMLDivElement;
-    private _ctrl_bar: HTMLElement;
-    private _learning_notes_bar: HTMLDivElement;
-    private _quiz_body_div: HTMLDivElement;
-    private _media_div: HTMLDivElement;
-    private _status_bar: HTMLElement;
+    private _headerDiv: HTMLDivElement;
+    private _ctrlBar: HTMLElement;
+    private _learningNotesBar: HTMLDivElement;
+    private _quizBodyDiv: HTMLDivElement;
+    private _mediaDiv: HTMLDivElement;
+    private _statusBar: HTMLElement;
     //
-    public get learning_notes_bar(): HTMLDivElement {
-        return this._learning_notes_bar;
+    public get learningNotesBar(): HTMLDivElement {
+        return this._learningNotesBar;
     }
 
-    public get header_div(): HTMLDivElement {
-        return this._header_div;
+    public get headerDiv(): HTMLDivElement {
+        return this._headerDiv;
     }
     public get element(): HTMLFormElement {
         return this._element;
     }
-    public get quiz_body_div(): HTMLDivElement {
-        return this._quiz_body_div;
+    public get quizBodyDiv(): HTMLDivElement {
+        return this._quizBodyDiv;
     }
-    public get media_div(): HTMLDivElement {
-        return this._media_div;
+    public get mediaDiv(): HTMLDivElement {
+        return this._mediaDiv;
     }
 
-    public get status_bar(): HTMLElement {
-        return this._status_bar;
+    public get statusBar(): HTMLElement {
+        return this._statusBar;
     }
 
     constructor(callbacks) {
         this._element = (createElement("form", {}, ["quiz-card", "border-primary"]) as HTMLFormElement);
-        this._header_div = (createElement("div", {}, ["quiz-header", "card-header", "container", "container-fluid"]) as HTMLDivElement);
-        this._element.appendChild(this._header_div);
+        this._headerDiv = (createElement("div", {}, ["quiz-header", "card-header", "container", "container-fluid"]) as HTMLDivElement);
+        this._element.appendChild(this._headerDiv);
 
         if (callbacks.onAddImageToQuizClicked || callbacks.onImageClicked) {
-            this._media_div = (createElement("div", {}, ["quiz-media", "card"]) as HTMLDivElement);
-            this._element.appendChild(this._media_div);
+            this._mediaDiv = (createElement("div", {}, ["quiz-media", "card"]) as HTMLDivElement);
+            this._element.appendChild(this._mediaDiv);
         }
 
-        this._quiz_body_div = (createElement("div", {}, ["quiz-body"]) as HTMLDivElement);
-        this._element.appendChild(this._quiz_body_div)
+        this._quizBodyDiv = (createElement("div", {}, ["quiz-body"]) as HTMLDivElement);
+        this._element.appendChild(this._quizBodyDiv)
 
-        this._learning_notes_bar = (createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px") as HTMLDivElement);
-        this._element.appendChild(this._learning_notes_bar)
-        this._status_bar = createElement("p", {}, ["form-text", "text-center", "text-danger"])
-        this._element.appendChild(this._status_bar)
+        this._learningNotesBar = (createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px") as HTMLDivElement);
+        this._element.appendChild(this._learningNotesBar)
+        this._statusBar = createElement("p", {}, ["form-text", "text-center", "text-danger"])
+        this._element.appendChild(this._statusBar)
     }
 
 
-    add_ctrl_bar() {
+    addCtrlBar() {
         // The user is responsible for creating this bar
 
         return;

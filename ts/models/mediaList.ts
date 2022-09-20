@@ -1,100 +1,100 @@
 import { MediaItem } from "./mediaItem";
 
 export class MediaList {
-    private _media_list: MediaItem[];
+    private _mediaList: MediaItem[];
 
     constructor(input) {
-        this._media_list = []
+        this._mediaList = []
         if (input) {
             if (input.constructor === Array) {
-                this.from_list(input)
+                this.fromList(input)
             } else {
                 try {
                     JSON.parse(input)
-                    this.from_json(input)
+                    this.fromJson(input)
                 } catch (err) {
                     throw "Invalid input " + typeof (input)
                 }
             }
             //throw "Invalid input " + typeof (input)
         } else {
-            this._media_list = []
+            this._mediaList = []
         }
     }
 
-    add_media_item(item) {
-        if (!MediaItem.isMedia(item) || !MediaItem.validate_empty(item.type, item.url)) {
+    addMediaItem(item) {
+        if (!MediaItem.isMedia(item) || !MediaItem.validateEmpty(item.type, item.url)) {
             throw "Invalid item" + item
         }
-        this._media_list.push(item)
+        this._mediaList.push(item)
     }
 
-    remove_media_item(index: number) {
-        this._media_list.splice(index, 1);
+    removeMediaItem(index: number) {
+        this._mediaList.splice(index, 1);
     }
 
-    get_item_index(item: MediaItem) {
-        return this._media_list.indexOf(item)
+    getItemIndex(item: MediaItem) {
+        return this._mediaList.indexOf(item)
     }
 
-    get_media_item(index: number) {
-        return this._media_list[index]
+    getMediaItem(index: number) {
+        return this._mediaList[index]
     }
 
-    get media_list() {
-        return this._media_list
+    get mediaList() {
+        return this._mediaList
     }
 
-    from_list(list) {
+    fromList(list) {
         for (var x = 0; x < list.length; x++) {
             var media_item = MediaItem.from(list[x])
-            this.add_media_item(media_item)
+            this.addMediaItem(media_item)
         }
-        return this.media_list;
+        return this.mediaList;
     }
 
-    from_json(j) {
+    fromJson(j) {
         const list = JSON.parse(j)
-        this.from_list(list)
-        return this.media_list;
+        this.fromList(list)
+        return this.mediaList;
     }
 
-    to_list() {
+    toList() {
         const res = []
-        const medias = this.media_list;
+        const medias = this.mediaList;
         for (var x = 0; x < medias.length; x++) {
-            res.push(MediaItem.to_dict(medias[x]))
+            res.push(MediaItem.toDict(medias[x]))
         }
         return res;
     }
 
-    to_json() {
-        return JSON.stringify(this.to_list())
+    toJson() {
+        return JSON.stringify(this.toList())
     }
 
-    is_media_list() {
+    isMediaList() {
         return true
     }
 
     get length() {
-        return this._media_list.length
+        return this._mediaList.length
     }
 
-    static is_valid(media_list: MediaList) {
+    static isValid(mediaList: MediaList) {
 
-        if (!media_list.is_media_list()) {
+        if (!mediaList.isMediaList()) {
             return { valid: false, error: "Invalid Media List. Not media list" }
         }
 
-        const medias: Array<MediaItem> = media_list.media_list
+        const medias: Array<MediaItem> = mediaList.mediaList
         for (var x = 0; x < medias.length; x++) {
             var m = medias[x]
             console.log(m)
-            console.log(m.is_media_item())
-            if (!m.is_media_item()) {
+            console.log(m.isMediaItem())
+            if (!m.isMediaItem()) {
                 return { valid: false, error: "Invalid Media Item:" + m }
             }
-            let v = MediaItem.validate_empty(m.type, m.url)
+            let v = MediaItem.validateEmpty(m.type, m.url)
             console.log(v)
             if (!v.valid) {
                 return v
