@@ -71,7 +71,7 @@ export class QuizHTML {
     };
     this.createLayout()
     this._headerAdapter = new HeaderAdapter(this._mode, this._quizModel, this.headerDiv);
-    this._choicesAdapter = new ChoiceAdapter(this._mode, this._quizModel, this.quizBodyDiv)
+    this._choicesAdapter = new this.ChoiceAdapterFactory(this._mode, this._quizModel, this.quizBodyDiv)
     this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._quizModel, this.learningNotesBar);
     if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
       (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
@@ -116,7 +116,7 @@ export class QuizHTML {
     }
     this.createLayout();
     this._headerAdapter = new HeaderAdapter(this._mode, this._fixedQuizModel, this.headerDiv);
-    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.quizBodyDiv)
+    this._choicesAdapter = new this.ChoiceAdapterFactory(this._mode, this._fixedQuizModel, this.quizBodyDiv)
     this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._fixedQuizModel, this.learningNotesBar);
     if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
       (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
@@ -131,7 +131,7 @@ export class QuizHTML {
     }
   }
 
-  private get ChoiceAdapter(): typeof ChoiceAdapter {
+  private get ChoiceAdapterFactory(): typeof ChoiceAdapter {
     let type = this._quizModel.type;
     if (type === QUIZ_TYPES.SC) {
       return SCAdapter

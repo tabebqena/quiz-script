@@ -5892,7 +5892,7 @@ var QuizHTML = /** @class */ (function () {
         };
         this.createLayout();
         this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._quizModel, this.headerDiv);
-        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.quizBodyDiv);
+        this._choicesAdapter = new this.ChoiceAdapterFactory(this._mode, this._quizModel, this.quizBodyDiv);
         this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._quizModel, this.learningNotesBar);
         if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
             (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
@@ -5925,7 +5925,7 @@ var QuizHTML = /** @class */ (function () {
         }
         this.createLayout();
         this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._fixedQuizModel, this.headerDiv);
-        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.quizBodyDiv);
+        this._choicesAdapter = new this.ChoiceAdapterFactory(this._mode, this._fixedQuizModel, this.quizBodyDiv);
         this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._fixedQuizModel, this.learningNotesBar);
         if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
             (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
@@ -5936,7 +5936,7 @@ var QuizHTML = /** @class */ (function () {
             this._parent.appendChild(this.element);
         }
     };
-    Object.defineProperty(QuizHTML.prototype, "ChoiceAdapter", {
+    Object.defineProperty(QuizHTML.prototype, "ChoiceAdapterFactory", {
         get: function () {
             var type = this._quizModel.type;
             if (type === quizModel_1.QUIZ_TYPES.SC) {
