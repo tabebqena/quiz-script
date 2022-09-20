@@ -1,0 +1,3 @@
+- Update to use bootstrap 5
+- Remove icofont dependency.
+- Remove testViewer.
