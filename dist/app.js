@@ -28,22 +28,14 @@ let callbacks = {
     model2 = QuizModel.from_json(model);
     console.log(model);
 
-    html = new QuizHTML(viewer, model2, "ANSWER", {});
+    html = new QuizHTML(model2, "ANSWER", viewer, {});
   },
 };
-html = new QuizHTML(wrapper, model, "CREATE");
+html = new QuizHTML(model, "CREATE", wrapper);
 
 function getAnswer() {
   console.log(QuizModel.to_dict(model2));
   console.log(html);
 }
-// new QuizHTML(
-//   viewer,
-//   QuizModel.from_json(
-//     '{"content": {"answer": [], "choices": [{"id": 0, "media_list": [], "text": "الصين"}, {"id": 1, "media_list": [], "text": "اسيا"}, {"id": 2, "media_list": [], "text": "افريقيا"}, {"id": 3, "media_list": [], "text": "امريكا الشمالية"}], "correct": [1], "extra": {}, "hint": "", "id": "117326373f17349d", "learning_notes": "", "media_list": [], "title": "ما هي أصغر قارة من حيث المساحة ؟", "type": "SC"}, "creator_id": "b2bbbf67956c3db9", "id": "117326373f17349d", "title": "ما هي أصغر قارة من حيث المساحة ؟", "ts": 1608325105, "type": "SC"}'
-//   ),
-//   "ANSWER",
-//   {}
-// );
 
 /* {"id":1,"type":"SC","title":"fvzx","hint":"","choices":[{"id":0,"text":"1","media_list":[]},{"id":1,"text":"2","media_list":[]}],"media_list":[],"correct":[1],"answer":[],"extra":{},"learning_notes":""} */

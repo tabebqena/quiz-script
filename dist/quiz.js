@@ -5873,14 +5873,20 @@ exports.HTML_MODE = Object.freeze({
     SHOW_RESULT: "SHOW_RESULT",
 });
 var QuizHTML = /** @class */ (function () {
-    function QuizHTML(parent, quizModel, mode, callbacks) {
-        this._parent = parent;
+    function QuizHTML(quizModel, mode, parent, callbacks) {
+        if (quizModel == null || quizModel === undefined) {
+            throw ("QuizModel can't be null or undefined !");
+        }
+        var validation = quizModel_1.QuizModel.validateEmpty(quizModel.id, quizModel.type, quizModel.mediaList, quizModel.choicesList);
+        if (!validation.valid) {
+            throw ("Invalid quizModel: " + validation.error);
+        }
         this._quizModel = quizModel;
         this._fixedQuizModel = quizModel;
         this._mode = mode || exports.HTML_MODE.CREATE;
+        this._parent = parent;
         this._callbacks = callbacks || {
             onSubmit: undefined,
-            // onCancelClicked: () => void;
             onAddImageToQuizClicked: undefined,
             onImageClicked: undefined
         };

@@ -19,7 +19,6 @@ export const HTML_MODE = Object.freeze({
 
 export interface ICallbacks {
   onSubmit: (quizModel: QuizModel) => void;
-  // onCancelClicked: () => void;
   onAddImageToQuizClicked: () => void;
   onImageClicked: (url: string) => void;
 }
@@ -49,18 +48,24 @@ export class QuizHTML {
 
 
   constructor(
-    parent,
     quizModel: QuizModel,
     mode: string,
+    parent: HTMLElement,
     callbacks: ICallbacks
   ) {
-    this._parent = parent;
+    if (quizModel == null || quizModel === undefined) {
+      throw ("QuizModel can't be null or undefined !");
+    }
+    let validation = QuizModel.validateEmpty(quizModel.id, quizModel.type, quizModel.mediaList, quizModel.choicesList)
+    if (!validation.valid) {
+      throw ("Invalid quizModel: " + validation.error);
+    }
     this._quizModel = quizModel;
     this._fixedQuizModel = quizModel;
     this._mode = mode || HTML_MODE.CREATE;
+    this._parent = parent;
     this._callbacks = callbacks || {
       onSubmit: undefined,
-      // onCancelClicked: () => void;
       onAddImageToQuizClicked: undefined,
       onImageClicked: undefined
     };
