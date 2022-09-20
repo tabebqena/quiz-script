@@ -3809,130 +3809,6 @@ Sortable.mount(Remove, Revert);
 
 /***/ }),
 
-/***/ "./ts/QuizLayoutCreator.ts":
-/*!*********************************!*\
-  !*** ./ts/QuizLayoutCreator.ts ***!
-  \*********************************/
-/*! flagged exports */
-/*! export QuizLayoutCreator [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export __esModule [provided] [no usage info] [missing usage info prevents renaming] */
-/*! other exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QuizLayoutCreator = void 0;
-var utils_1 = __webpack_require__(/*! ./utils */ "./ts/utils.ts");
-var QuizLayoutCreator = /** @class */ (function () {
-    function QuizLayoutCreator(callbacks) {
-        this._element = utils_1.createElement("form", {}, ["quiz-card", "border-primary"]);
-        this._headerDiv = utils_1.createElement("div", {}, ["quiz-header", "card-header", "container", "container-fluid"]);
-        this._element.appendChild(this._headerDiv);
-        if (callbacks.onAddImageToQuizClicked || callbacks.onImageClicked) {
-            this._mediaDiv = utils_1.createElement("div", {}, ["quiz-media", "card"]);
-            this._element.appendChild(this._mediaDiv);
-        }
-        this._quizBodyDiv = utils_1.createElement("div", {}, ["quiz-body"]);
-        this._element.appendChild(this._quizBodyDiv);
-        this._learningNotesBar = utils_1.createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px");
-        this._element.appendChild(this._learningNotesBar);
-        this._statusBar = utils_1.createElement("p", {}, ["form-text", "text-center", "text-danger"]);
-        this._element.appendChild(this._statusBar);
-    }
-    Object.defineProperty(QuizLayoutCreator.prototype, "learningNotesBar", {
-        //
-        get: function () {
-            return this._learningNotesBar;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizLayoutCreator.prototype, "headerDiv", {
-        get: function () {
-            return this._headerDiv;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizLayoutCreator.prototype, "element", {
-        get: function () {
-            return this._element;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizLayoutCreator.prototype, "quizBodyDiv", {
-        get: function () {
-            return this._quizBodyDiv;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizLayoutCreator.prototype, "mediaDiv", {
-        get: function () {
-            return this._mediaDiv;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizLayoutCreator.prototype, "statusBar", {
-        get: function () {
-            return this._statusBar;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    QuizLayoutCreator.prototype.addCtrlBar = function () {
-        // The user is responsible for creating this bar
-        return;
-        // this._ctrl_bar = createElement("div", {}, ["col-12", "btn-group"], "padding:5px")
-        // if (this._quizHTML._quizModel.type != QUIZ_TYPES.TF) {
-        //     let add_option = createElement("input",
-        //         {
-        //             "type": "button",
-        //             "value": "Add Choice",
-        //             "where": "div"
-        //         },
-        //         ["btn", "btn-secondary", "m-2"])
-        //     add_option.onclick = () => {
-        //         this._quizHTML.add_choice()
-        //     }
-        //     // this._ctrl_bar.appendChild(add_option)
-        //     // Add it to the quiz body for better view
-        //     this._quiz_body_div.appendChild(add_option);
-        // }
-        // let submit = createElement("input",
-        //     {
-        //         "type": "button",
-        //         "value": "Submit"
-        //     },
-        //     ["btn", "btn-primary", "quiz-submit", "m-2"])
-        // submit.onclick = () => {
-        //     this._quizHTML.onSubmit()
-        // }
-        // this._ctrl_bar.appendChild(submit)
-        // let cancel = createElement("input",
-        //     {
-        //         "type": "button",
-        //         "value": "Cancel"
-        //     },
-        //     ["btn", "btn-danger", "quiz-cancel", "m-2"])
-        // cancel.onclick = () => {
-        //     if (this._quizHTML._callbacks && this._quizHTML._callbacks.onCancelClicked) {
-        //         this._quizHTML._callbacks.onCancelClicked()
-        //     }
-        // }
-        // this._ctrl_bar.appendChild(cancel)
-        // this._element.appendChild(this._ctrl_bar)
-    };
-    return QuizLayoutCreator;
-}());
-exports.QuizLayoutCreator = QuizLayoutCreator;
-
-
-/***/ }),
-
 /***/ "./ts/adapters/choiceAdapter.ts":
 /*!**************************************!*\
   !*** ./ts/adapters/choiceAdapter.ts ***!
@@ -5989,7 +5865,7 @@ var sc_adapter_1 = __webpack_require__(/*! ./adapters/sc_adapter */ "./ts/adapte
 var sort_adapter_1 = __webpack_require__(/*! ./adapters/sort_adapter */ "./ts/adapters/sort_adapter.ts");
 var tf_adapter_1 = __webpack_require__(/*! ./adapters/tf_adapter */ "./ts/adapters/tf_adapter.ts");
 var quizModel_1 = __webpack_require__(/*! ./models/quizModel */ "./ts/models/quizModel.ts");
-var QuizLayoutCreator_1 = __webpack_require__(/*! ./QuizLayoutCreator */ "./ts/QuizLayoutCreator.ts");
+var utils_1 = __webpack_require__(/*! ./utils */ "./ts/utils.ts");
 exports.HTML_MODE = Object.freeze({
     CREATE: "CREATE",
     ANSWER: "ANSWER",
@@ -6008,40 +5884,46 @@ var QuizHTML = /** @class */ (function () {
             onAddImageToQuizClicked: undefined,
             onImageClicked: undefined
         };
-        this._layoutCreator = new QuizLayoutCreator_1.QuizLayoutCreator(callbacks);
-        this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._quizModel, this._layoutCreator.headerDiv);
-        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.layoutCreator.quizBodyDiv);
-        this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._quizModel, this._layoutCreator.learningNotesBar);
-        if (callbacks.onAddImageToQuizClicked || callbacks.onImageClicked) {
-            this._mediaAdapter = new media_adapter_1.MediaAdapter(this._mode, this._quizModel, this._layoutCreator.mediaDiv, this._callbacks);
+        this.createLayout();
+        this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._quizModel, this.headerDiv);
+        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.quizBodyDiv);
+        this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._quizModel, this.learningNotesBar);
+        if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+            (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
+            this._mediaAdapter = new media_adapter_1.MediaAdapter(this._mode, this._quizModel, this.mediaDiv, this._callbacks);
         }
         this.updateView();
         if (parent) {
             parent.appendChild(this.element);
         }
     }
-    Object.defineProperty(QuizHTML.prototype, "layoutCreator", {
-        get: function () {
-            return this._layoutCreator;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(QuizHTML.prototype, "element", {
-        get: function () {
-            return this._layoutCreator.element;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    QuizHTML.prototype.createLayout = function () {
+        this._element = utils_1.createElement("form", {}, ["quiz-card", "border-primary"]);
+        this._headerDiv = utils_1.createElement("div", {}, ["quiz-header", "card-header", "container", "container-fluid"]);
+        this._element.appendChild(this._headerDiv);
+        if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+            (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
+            this._mediaDiv = utils_1.createElement("div", {}, ["quiz-media", "card"]);
+            this._element.appendChild(this._mediaDiv);
+        }
+        this._quizBodyDiv = utils_1.createElement("div", {}, ["quiz-body"]);
+        this._element.appendChild(this._quizBodyDiv);
+        this._learningNotesBar = utils_1.createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px");
+        this._element.appendChild(this._learningNotesBar);
+        this._statusBar = utils_1.createElement("p", {}, ["form-text", "text-center", "text-danger"]);
+        this._element.appendChild(this._statusBar);
+    };
     QuizHTML.prototype.reset = function () {
-        this._parent.removeChild(this.layoutCreator.element);
-        this._layoutCreator = new QuizLayoutCreator_1.QuizLayoutCreator(this._callbacks);
-        this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.headerDiv);
-        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.layoutCreator.quizBodyDiv);
-        this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.learningNotesBar);
-        if (this._callbacks.onAddImageToQuizClicked || this._callbacks.onImageClicked) {
-            this._mediaAdapter = new media_adapter_1.MediaAdapter(this._mode, this._quizModel, this._layoutCreator.mediaDiv, this._callbacks);
+        if (this._parent !== undefined && this._parent !== null) {
+            this._parent.removeChild(this.element);
+        }
+        this.createLayout();
+        this._headerAdapter = new headerAdapter_1.HeaderAdapter(this._mode, this._fixedQuizModel, this.headerDiv);
+        this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.quizBodyDiv);
+        this._learningNotesAdapter = new learningNotesAdapter_1.LearningNotesAdapter(this._mode, this._fixedQuizModel, this.learningNotesBar);
+        if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+            (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
+            this._mediaAdapter = new media_adapter_1.MediaAdapter(this._mode, this._quizModel, this.mediaDiv, this._callbacks);
         }
         this.updateView();
         if (this._parent) {
@@ -6087,7 +5969,7 @@ var QuizHTML = /** @class */ (function () {
             if (this._quizModel.type === quizModel_1.QUIZ_TYPES.SC ||
                 this._quizModel.type === quizModel_1.QUIZ_TYPES.MC ||
                 this._quizModel.type === quizModel_1.QUIZ_TYPES.SORT) {
-                var sortable = new sortablejs_1.Sortable(this.layoutCreator.quizBodyDiv, {
+                var sortable = new sortablejs_1.Sortable(this.quizBodyDiv, {
                     sort: true,
                     animation: 150,
                     draggable: ".quiz-choice",
@@ -6098,7 +5980,7 @@ var QuizHTML = /** @class */ (function () {
         else if (this.mode === exports.HTML_MODE.ANSWER ||
             this.mode === exports.HTML_MODE.UPDATE_ANSWER) {
             if (this._quizModel.type === quizModel_1.QUIZ_TYPES.SORT) {
-                var sortable = new sortablejs_1.Sortable(this.layoutCreator.quizBodyDiv, {
+                var sortable = new sortablejs_1.Sortable(this.quizBodyDiv, {
                     sort: true,
                     animation: 150,
                     draggable: ".quiz-choice",
@@ -6111,7 +5993,7 @@ var QuizHTML = /** @class */ (function () {
         }
     };
     QuizHTML.prototype.submit = function () {
-        this.layoutCreator.statusBar.innerText = "";
+        this.statusBar.innerText = "";
         this.updateModel();
         var valid = this._quizModel.validateFull();
         if (valid.valid) {
@@ -6120,7 +6002,7 @@ var QuizHTML = /** @class */ (function () {
             }
         }
         else {
-            this.layoutCreator.statusBar.innerText = valid.error;
+            this.statusBar.innerText = valid.error;
         }
     };
     QuizHTML.prototype.updateModel = function () {
@@ -6162,6 +6044,48 @@ var QuizHTML = /** @class */ (function () {
          */
         get: function () {
             return this._mode;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "learningNotesBar", {
+        get: function () {
+            return this._learningNotesBar;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "headerDiv", {
+        get: function () {
+            return this._headerDiv;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "element", {
+        get: function () {
+            return this._element;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "quizBodyDiv", {
+        get: function () {
+            return this._quizBodyDiv;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "mediaDiv", {
+        get: function () {
+            return this._mediaDiv;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(QuizHTML.prototype, "statusBar", {
+        get: function () {
+            return this._statusBar;
         },
         enumerable: false,
         configurable: true

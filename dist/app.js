@@ -31,7 +31,7 @@ let callbacks = {
     html = new QuizHTML(viewer, model2, "ANSWER", {});
   },
 };
-html = new QuizHTML(wrapper, model, "CREATE", callbacks);
+html = new QuizHTML(wrapper, model, "CREATE");
 
 function getAnswer() {
   console.log(QuizModel.to_dict(model2));

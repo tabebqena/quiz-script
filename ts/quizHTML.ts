@@ -8,7 +8,7 @@ import { SCAdapter } from "./adapters/sc_adapter";
 import { SORTAdapter } from "./adapters/sort_adapter";
 import { TFAdapter } from "./adapters/tf_adapter";
 import { QuizModel, QUIZ_TYPES } from "./models/quizModel";
-import { QuizLayoutCreator } from "./QuizLayoutCreator";
+import { createElement } from "./utils";
 
 export const HTML_MODE = Object.freeze({
   CREATE: "CREATE", // update
@@ -34,19 +34,19 @@ export class QuizHTML {
 
   private _callbacks: ICallbacks;
 
-  private _layoutCreator: QuizLayoutCreator;
   private _learningNotesAdapter: LearningNotesAdapter;
   private _choicesAdapter: ChoiceAdapter;
   private _mediaAdapter: MediaAdapter;
   private _parent: any;
+  // Html elements
+  private _element: HTMLFormElement;
+  private _headerDiv: HTMLDivElement;
+  private _learningNotesBar: HTMLDivElement;
+  private _quizBodyDiv: HTMLDivElement;
+  private _mediaDiv: HTMLDivElement;
+  private _statusBar: HTMLElement;
 
-  public get layoutCreator(): QuizLayoutCreator {
-    return this._layoutCreator;
-  }
 
-  public get element() {
-    return this._layoutCreator.element;
-  }
 
   constructor(
     parent,
@@ -64,15 +64,16 @@ export class QuizHTML {
       onAddImageToQuizClicked: undefined,
       onImageClicked: undefined
     };
-    this._layoutCreator = new QuizLayoutCreator(callbacks);
-    this._headerAdapter = new HeaderAdapter(this._mode, this._quizModel, this._layoutCreator.headerDiv);
-    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.layoutCreator.quizBodyDiv)
-    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._quizModel, this._layoutCreator.learningNotesBar);
-    if (callbacks.onAddImageToQuizClicked || callbacks.onImageClicked) {
+    this.createLayout()
+    this._headerAdapter = new HeaderAdapter(this._mode, this._quizModel, this.headerDiv);
+    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._quizModel, this.quizBodyDiv)
+    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._quizModel, this.learningNotesBar);
+    if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+      (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
       this._mediaAdapter = new MediaAdapter(
         this._mode,
         this._quizModel,
-        this._layoutCreator.mediaDiv,
+        this.mediaDiv,
         this._callbacks
       );
     }
@@ -82,16 +83,41 @@ export class QuizHTML {
     }
   }
 
+
+  createLayout() {
+    this._element = (createElement("form", {}, ["quiz-card", "border-primary"]) as HTMLFormElement);
+    this._headerDiv = (createElement("div", {}, ["quiz-header", "card-header", "container", "container-fluid"]) as HTMLDivElement);
+    this._element.appendChild(this._headerDiv);
+
+    if (
+      (this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+      (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
+      this._mediaDiv = (createElement("div", {}, ["quiz-media", "card"]) as HTMLDivElement);
+      this._element.appendChild(this._mediaDiv);
+    }
+
+    this._quizBodyDiv = (createElement("div", {}, ["quiz-body"]) as HTMLDivElement);
+    this._element.appendChild(this._quizBodyDiv)
+
+    this._learningNotesBar = (createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px") as HTMLDivElement);
+    this._element.appendChild(this._learningNotesBar)
+    this._statusBar = createElement("p", {}, ["form-text", "text-center", "text-danger"])
+    this._element.appendChild(this._statusBar)
+  }
+
   reset() {
-    this._parent.removeChild(this.layoutCreator.element);
-    this._layoutCreator = new QuizLayoutCreator(this._callbacks);
-    this._headerAdapter = new HeaderAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.headerDiv);
-    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.layoutCreator.quizBodyDiv)
-    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._fixedQuizModel, this._layoutCreator.learningNotesBar);
-    if (this._callbacks.onAddImageToQuizClicked || this._callbacks.onImageClicked) {
+    if (this._parent !== undefined && this._parent !== null) {
+      this._parent.removeChild(this.element);
+    }
+    this.createLayout();
+    this._headerAdapter = new HeaderAdapter(this._mode, this._fixedQuizModel, this.headerDiv);
+    this._choicesAdapter = new this.ChoiceAdapter(this._mode, this._fixedQuizModel, this.quizBodyDiv)
+    this._learningNotesAdapter = new LearningNotesAdapter(this._mode, this._fixedQuizModel, this.learningNotesBar);
+    if ((this._callbacks.onAddImageToQuizClicked !== undefined && this._callbacks.onAddImageToQuizClicked !== null) ||
+      (this._callbacks.onImageClicked !== undefined && this._callbacks.onImageClicked !== null)) {
       this._mediaAdapter = new MediaAdapter(this._mode,
         this._quizModel,
-        this._layoutCreator.mediaDiv,
+        this.mediaDiv,
         this._callbacks);
     }
     this.updateView();
@@ -143,7 +169,7 @@ export class QuizHTML {
         this._quizModel.type === QUIZ_TYPES.MC ||
         this._quizModel.type === QUIZ_TYPES.SORT
       ) {
-        var sortable = new Sortable(this.layoutCreator.quizBodyDiv, {
+        var sortable = new Sortable(this.quizBodyDiv, {
           sort: true, // sorting inside list
           animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
           draggable: ".quiz-choice", // Specifies which items inside the element should be draggable
@@ -155,7 +181,7 @@ export class QuizHTML {
       this.mode === HTML_MODE.UPDATE_ANSWER
     ) {
       if (this._quizModel.type === QUIZ_TYPES.SORT) {
-        var sortable = new Sortable(this.layoutCreator.quizBodyDiv, {
+        var sortable = new Sortable(this.quizBodyDiv, {
           sort: true, // sorting inside list
           animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
           draggable: ".quiz-choice", // Specifies which items inside the element should be draggable
@@ -168,7 +194,7 @@ export class QuizHTML {
   }
 
   submit() {
-    this.layoutCreator.statusBar.innerText = "";
+    this.statusBar.innerText = "";
     this.updateModel();
 
     let valid = this._quizModel.validateFull();
@@ -177,7 +203,7 @@ export class QuizHTML {
         this._callbacks.onSubmit(this._quizModel);
       }
     } else {
-      this.layoutCreator.statusBar.innerText = valid.error;
+      this.statusBar.innerText = valid.error;
     }
   }
 
@@ -221,6 +247,27 @@ export class QuizHTML {
    */
   public get mode(): string {
     return this._mode;
+  }
+
+  public get learningNotesBar(): HTMLDivElement {
+    return this._learningNotesBar;
+  }
+
+  public get headerDiv(): HTMLDivElement {
+    return this._headerDiv;
+  }
+  public get element(): HTMLFormElement {
+    return this._element;
+  }
+  public get quizBodyDiv(): HTMLDivElement {
+    return this._quizBodyDiv;
+  }
+  public get mediaDiv(): HTMLDivElement {
+    return this._mediaDiv;
+  }
+
+  public get statusBar(): HTMLElement {
+    return this._statusBar;
   }
 }
 
