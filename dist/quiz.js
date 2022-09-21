@@ -4071,6 +4071,7 @@ exports.LearningNotesAdapter = LearningNotesAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
+/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4403,6 +4404,7 @@ exports.MediaAdapter = MediaAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
+/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4530,6 +4532,7 @@ exports.SCAdapter = SCAdapter;
   \*************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
+/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -4752,6 +4755,7 @@ exports.SORTAdapter = SORTAdapter;
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_exports__, __webpack_require__ */
+/*! CommonJS bailout: this is used directly at 2:17-21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -5974,6 +5978,9 @@ var QuizHTML = /** @class */ (function () {
     QuizHTML.prototype.addChoice = function () {
         if (this._quizModel.type !== quizModel_1.QUIZ_TYPES.TF) {
             this._choicesAdapter.appendEmptyChoice();
+        }
+        else {
+            throw ("You can't add choice to True/False question");
         }
     };
     QuizHTML.prototype.addMediaItem = function (type, url) {
