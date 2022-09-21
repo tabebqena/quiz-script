@@ -42,7 +42,7 @@ export class QuizModel {
         this._type = type;
         this._title = title || "";
         this._mediaList = mediaList || new MediaList(null);
-        this._hint = hint;
+        this._hint = hint || "";
         this._choicesList = choicesList || new ChoicesList(null);
         this._correct = correct || [];
         this._answer = answer || [];
