@@ -204,7 +204,13 @@ export class QuizHTML {
     this.statusBar.innerText = "";
     this.updateModel();
 
-    let validation = this._quizModel.validateFull();
+    let validation;
+    if (this.mode == HTML_MODE.ANSWER || this.mode == HTML_MODE.UPDATE_ANSWER) {
+      validation = this._quizModel.validateFull(false);
+    } else {
+      validation = this._quizModel.validateFull(true);
+    }
+
     if (validation.valid) {
       if (this._callbacks.onSubmit) {
         this._callbacks.onSubmit(this._quizModel);

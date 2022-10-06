@@ -282,7 +282,7 @@ export class QuizModel {
         return { valid: true }
     }
 
-    validateFull() {
+    validateFull(validateCorrect = true) {
         let v = QuizModel.validateEmpty(this.id, this.type, this.mediaList, this.choicesList)
         if (!v.valid) {
             return v
@@ -318,26 +318,29 @@ export class QuizModel {
             }
         }
 
-        if (this.type === QUIZ_TYPES.SC) {
-            if (!this.correct || this.correct.length < 1) {
-                return { valid: false, error: "You should set the correct answer" }
-            }
-            if (this.correct.length > 1) {
-                return { valid: false, error: "Single choice question can't accept more than one correct answer" }
-            }
-        } else if (this.type === QUIZ_TYPES.MC) {
-            if (!this.correct) {
-                this.correct = []
-            }
-        } else if (this.type === QUIZ_TYPES.TF) {
-            if (!this.correct || this.correct.length === 0) {
-                return { valid: false, error: "You should set the correct answer" }
-            }
-            if (this.correct.length > 1) {
-                return { valid: false, error: "True/False questions can't accept more than ONE correct answer" }
-            }
-            if (this.correct[0] != 0 && this.correct[0] != 1) {
-                return { valid: false, error: "True/False questions can accept only T/F as correct answer" }
+        if (validateCorrect) {
+
+            if (this.type === QUIZ_TYPES.SC) {
+                if (!this.correct || this.correct.length < 1) {
+                    return { valid: false, error: "You should set the correct answer" }
+                }
+                if (this.correct.length > 1) {
+                    return { valid: false, error: "Single choice question can't accept more than one correct answer" }
+                }
+            } else if (this.type === QUIZ_TYPES.MC) {
+                if (!this.correct) {
+                    this.correct = []
+                }
+            } else if (this.type === QUIZ_TYPES.TF) {
+                if (!this.correct || this.correct.length === 0) {
+                    return { valid: false, error: "You should set the correct answer" }
+                }
+                if (this.correct.length > 1) {
+                    return { valid: false, error: "True/False questions can't accept more than ONE correct answer" }
+                }
+                if (this.correct[0] != 0 && this.correct[0] != 1) {
+                    return { valid: false, error: "True/False questions can accept only T/F as correct answer" }
+                }
             }
         }
         return { valid: true }

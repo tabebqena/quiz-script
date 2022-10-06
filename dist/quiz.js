@@ -5745,7 +5745,8 @@ var QuizModel = /** @class */ (function () {
         }
         return { valid: true };
     };
-    QuizModel.prototype.validateFull = function () {
+    QuizModel.prototype.validateFull = function (validateCorrect) {
+        if (validateCorrect === void 0) { validateCorrect = true; }
         var v = QuizModel.validateEmpty(this.id, this.type, this.mediaList, this.choicesList);
         if (!v.valid) {
             return v;
@@ -5777,28 +5778,30 @@ var QuizModel = /** @class */ (function () {
                 return { valid: false, error: "Invalid choice: " + x + "error: " + v_1.error };
             }
         }
-        if (this.type === exports.QUIZ_TYPES.SC) {
-            if (!this.correct || this.correct.length < 1) {
-                return { valid: false, error: "You should set the correct answer" };
+        if (validateCorrect) {
+            if (this.type === exports.QUIZ_TYPES.SC) {
+                if (!this.correct || this.correct.length < 1) {
+                    return { valid: false, error: "You should set the correct answer" };
+                }
+                if (this.correct.length > 1) {
+                    return { valid: false, error: "Single choice question can't accept more than one correct answer" };
+                }
             }
-            if (this.correct.length > 1) {
-                return { valid: false, error: "Single choice question can't accept more than one correct answer" };
+            else if (this.type === exports.QUIZ_TYPES.MC) {
+                if (!this.correct) {
+                    this.correct = [];
+                }
             }
-        }
-        else if (this.type === exports.QUIZ_TYPES.MC) {
-            if (!this.correct) {
-                this.correct = [];
-            }
-        }
-        else if (this.type === exports.QUIZ_TYPES.TF) {
-            if (!this.correct || this.correct.length === 0) {
-                return { valid: false, error: "You should set the correct answer" };
-            }
-            if (this.correct.length > 1) {
-                return { valid: false, error: "True/False questions can't accept more than ONE correct answer" };
-            }
-            if (this.correct[0] != 0 && this.correct[0] != 1) {
-                return { valid: false, error: "True/False questions can accept only T/F as correct answer" };
+            else if (this.type === exports.QUIZ_TYPES.TF) {
+                if (!this.correct || this.correct.length === 0) {
+                    return { valid: false, error: "You should set the correct answer" };
+                }
+                if (this.correct.length > 1) {
+                    return { valid: false, error: "True/False questions can't accept more than ONE correct answer" };
+                }
+                if (this.correct[0] != 0 && this.correct[0] != 1) {
+                    return { valid: false, error: "True/False questions can accept only T/F as correct answer" };
+                }
             }
         }
         return { valid: true };
@@ -6024,7 +6027,13 @@ var QuizHTML = /** @class */ (function () {
     QuizHTML.prototype.submit = function () {
         this.statusBar.innerText = "";
         this.updateModel();
-        var validation = this._quizModel.validateFull();
+        var validation;
+        if (this.mode == exports.HTML_MODE.ANSWER || this.mode == exports.HTML_MODE.UPDATE_ANSWER) {
+            validation = this._quizModel.validateFull(false);
+        }
+        else {
+            validation = this._quizModel.validateFull(true);
+        }
         if (validation.valid) {
             if (this._callbacks.onSubmit) {
                 this._callbacks.onSubmit(this._quizModel);
