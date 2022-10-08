@@ -3836,7 +3836,7 @@ var ChoiceAdapter = /** @class */ (function () {
     ChoiceAdapter.prototype.appendDragDiv = function (element, cssText) {
         if (cssText === void 0) { cssText = ""; }
         var dragDiv = utils_1.createElement("div", {}, ["col-1",]);
-        var dragSign_ = utils_1.createElement("span", {}, ["fa", "fa-grip-vertical",]);
+        var dragSign_ = utils_1.createElement("span", {}, ["fa", "fa-sort",]);
         dragSign_.style.cssText = "margin: 0; position: relative;        top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%); font-size:25px" + ";" + cssText;
         dragDiv.appendChild(dragSign_);
         element.appendChild(dragDiv);
@@ -3898,10 +3898,16 @@ var ChoiceAdapter = /** @class */ (function () {
     ChoiceAdapter.prototype.appendCorrectDiv = function (row, isChecked, isCorrect) {
         var correctDiv = utils_1.createElement("div", {}, ["col-1"]);
         if (isCorrect) {
-            correctDiv.innerHTML = "<i class='fa fa-check' style=' font-size:1.5rem; color: aqua'></i>";
+            row.classList.add("bg-success", "bg-opacity-10");
         }
-        else if (isChecked) {
-            correctDiv.innerHTML = "<i class='fa fa-close'  style=' font-size:1.5rem; color: red'></i>";
+        if (isCorrect && isChecked) {
+            correctDiv.innerHTML = "<i class='fa fa-check' style=' font-size:1rem; color: aqua'></i>";
+        }
+        else if (isChecked && !isCorrect) {
+            correctDiv.innerHTML = "<i class='fa fa-close'  style=' font-size:1rem; color: red'></i>";
+        }
+        else if (isCorrect && !isChecked) {
+            correctDiv.innerHTML = "<i class='fa fa-circle-o'  style=' font-size:1rem; color: palevioletred'></i>";
         }
         row.appendChild(correctDiv);
     };
@@ -3935,9 +3941,12 @@ var ChoiceAdapter = /** @class */ (function () {
         }
         return correct;
     };
-    ChoiceAdapter.prototype.appendEmptyChoice = function (text) {
+    ChoiceAdapter.prototype.createEditorElement = function (text, value, isChecked, is_disabled) {
         if (text === void 0) { text = ""; }
-        throw "Not implemented Yet";
+        if (value === void 0) { value = ""; }
+        if (isChecked === void 0) { isChecked = false; }
+        if (is_disabled === void 0) { is_disabled = false; }
+        throw ("Not implemented");
     };
     ChoiceAdapter.prototype.updateView = function () {
         throw new Error('Method not implemented.');
@@ -4048,9 +4057,12 @@ var LearningNotesAdapter = /** @class */ (function () {
             this._learningNotesBar.appendChild(this._lpTextarea);
         }
         else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
-            var ele = utils_1.createElement("div", {}, ["alert", "alert-info"], "width:100%");
-            ele.innerText = this._quizModel.learningNotes;
-            this._learningNotesBar.appendChild(ele);
+            var text = this._quizModel.learningNotes;
+            if (text !== undefined && text !== null && text !== "") {
+                var ele = utils_1.createElement("div", {}, ["alert", "alert-info"], "width:100%");
+                ele.innerText = this._quizModel.learningNotes;
+                this._learningNotesBar.appendChild(ele);
+            }
         }
     };
     LearningNotesAdapter.prototype.updateModel = function () {
@@ -4098,8 +4110,9 @@ var MCAdapter = /** @class */ (function (_super) {
     function MCAdapter(mode, quizModel, element) {
         return _super.call(this, mode, quizModel, element) || this;
     }
-    MCAdapter.prototype.createEditorElement = function (text, isChecked) {
+    MCAdapter.prototype.createEditorElement = function (text, value, isChecked) {
         if (text === void 0) { text = ""; }
+        if (value === void 0) { value = ""; }
         if (isChecked === void 0) { isChecked = false; }
         var index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
@@ -4111,9 +4124,6 @@ var MCAdapter = /** @class */ (function (_super) {
         this.appendDelDiv(row, choiceEle);
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
-    };
-    MCAdapter.prototype.appendEmptyChoice = function () {
-        this.createEditorElement();
     };
     MCAdapter.prototype.createViewerElement = function (text, isChecked, isCorrect, isDisabled, showCorrectAnswer) {
         if (text === void 0) { text = ""; }
@@ -4151,7 +4161,7 @@ var MCAdapter = /** @class */ (function (_super) {
                 this.createViewerElement(text, isChecked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-                this.createEditorElement(text, isChecked);
+                this.createEditorElement(text, "", isChecked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, isChecked, isCorrect, true, true);
@@ -4431,8 +4441,9 @@ var SCAdapter = /** @class */ (function (_super) {
     function SCAdapter(mode, quizModel, element) {
         return _super.call(this, mode, quizModel, element) || this;
     }
-    SCAdapter.prototype.createEditorElement = function (text, is_checked) {
+    SCAdapter.prototype.createEditorElement = function (text, value, is_checked) {
         if (text === void 0) { text = ""; }
+        if (value === void 0) { value = ""; }
         if (is_checked === void 0) { is_checked = false; }
         var index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
@@ -4444,9 +4455,6 @@ var SCAdapter = /** @class */ (function (_super) {
         this.appendDelDiv(row, choiceEle);
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
-    };
-    SCAdapter.prototype.appendEmptyChoice = function () {
-        this.createEditorElement();
     };
     SCAdapter.prototype.createViewerElement = function (text, is_checked, is_correct, is_disabled, showCorrectAnswer) {
         if (text === void 0) { text = ""; }
@@ -4484,7 +4492,7 @@ var SCAdapter = /** @class */ (function (_super) {
                 this.createViewerElement(text, is_checked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-                this.createEditorElement(text, is_correct);
+                this.createEditorElement(text, "", is_correct);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, is_checked, is_correct, true, true);
@@ -4588,7 +4596,7 @@ var SORTAdapter = /** @class */ (function (_super) {
         }, ["quiz-choice", "m-4"], "cursor: grab");
         var row = utils_1.createElement("div", {}, ["row"]);
         if (showCorrectAnswer) {
-            this.appendDragDiv(row, ";color: gray");
+            this.appendDragDiv(row, "color: gray");
         }
         else {
             this.appendDragDiv(row);
@@ -4610,9 +4618,6 @@ var SORTAdapter = /** @class */ (function (_super) {
         }
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
-    };
-    SORTAdapter.prototype.appendEmptyChoice = function () {
-        this.createEditorElement("");
     };
     SORTAdapter.prototype.updateView = function () {
         if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
@@ -4882,28 +4887,32 @@ var TFAdapter = /** @class */ (function (_super) {
             return this._quizModel;
         }
         else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-            var correct = [];
-            for (var x = 0; x < choices.length; x++) {
-                var c = choices[x];
-                var inputs = c.getElementsByTagName("input");
-                for (var i = 0; i < inputs.length; i++) {
-                    var input = inputs[i];
-                    if (input.getAttribute("role") === "choice-ctrl") {
-                        var val = input.getAttribute("data-value");
-                        if (input.checked && val === "true") {
-                            correct = [1];
-                        }
-                        else if (input.checked && val === "false") {
-                            correct = [0];
-                        }
-                    }
-                }
-            }
-            this._quizModel.correct = correct;
+            this._quizModel.correct = this.get_correct();
             this._quizModel.choicesList = this.collectChoices();
             ;
             return this._quizModel;
         }
+    };
+    TFAdapter.prototype.get_correct = function () {
+        var correct = [];
+        var choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
+        for (var x = 0; x < choices.length; x++) {
+            var c = choices[x];
+            var inputs = c.getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {
+                var input = inputs[i];
+                if (input.getAttribute("role") === "choice-ctrl") {
+                    var val = input.getAttribute("data-value");
+                    if (input.checked && val === "true") {
+                        correct = [1];
+                    }
+                    else if (input.checked && val === "false") {
+                        correct = [0];
+                    }
+                }
+            }
+        }
+        return correct;
     };
     TFAdapter.prototype.collectChoices = function () {
         // let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
@@ -5937,8 +5946,10 @@ var QuizHTML = /** @class */ (function () {
         }
         this._quizBodyDiv = utils_1.createElement("div", {}, ["quiz-body"]);
         this._element.appendChild(this._quizBodyDiv);
-        this._learningNotesBar = utils_1.createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px");
-        this._element.appendChild(this._learningNotesBar);
+        if (this.mode === exports.HTML_MODE.SHOW_RESULT || this.mode === exports.HTML_MODE.CREATE) {
+            this._learningNotesBar = utils_1.createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px");
+            this._element.appendChild(this._learningNotesBar);
+        }
         this._statusBar = utils_1.createElement("p", {}, ["form-text", "text-center", "text-danger"]);
         this._element.appendChild(this._statusBar);
     };
@@ -5980,7 +5991,7 @@ var QuizHTML = /** @class */ (function () {
     });
     QuizHTML.prototype.addChoice = function () {
         if (this._quizModel.type !== quizModel_1.QUIZ_TYPES.TF) {
-            this._choicesAdapter.appendEmptyChoice();
+            this._choicesAdapter.createEditorElement();
         }
         else {
             throw ("You can't add choice to True/False question");
