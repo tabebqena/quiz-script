@@ -3858,8 +3858,12 @@ var ChoiceAdapter = /** @class */ (function () {
         element.appendChild(selectDiv);
         return selectDiv;
     };
-    ChoiceAdapter.prototype.appendTextEditorDiv = function (index, row, text) {
-        var textSpan = utils_1.createFormGroup(this._quizModel.id + "_choice_" + index, "Choice", "textarea", { "dir": "auto", }, "Choice " + index);
+    ChoiceAdapter.prototype.appendTextEditorDiv = function (index, row, text, help) {
+        if (help === void 0) { help = true; }
+        var textSpan = utils_1.createFormGroup(this._quizModel.id + "_choice_" + index, "Choice", "textarea", {
+            "dir": "auto",
+            "data-choice-id": index
+        }, help ? "Choice " + index : "");
         textSpan.classList.add("col-9");
         if (text) {
             textSpan.querySelector(".form-control").value = text;
@@ -3872,7 +3876,8 @@ var ChoiceAdapter = /** @class */ (function () {
         if (classes === void 0) { classes = []; }
         if (style === void 0) { style = ""; }
         var textSpan = utils_1.createElement("div", {
-            "id": this._quizModel.id + "_choice_" + index
+            "id": this._quizModel.id + "_choice_" + index,
+            "data-choice-id": index
         }, [], "");
         for (var key in attrs) {
             textSpan.setAttribute(key, attrs[key]);
@@ -3917,8 +3922,10 @@ var ChoiceAdapter = /** @class */ (function () {
         if (this._quizModel.type === quizModel_1.QUIZ_TYPES.SC || this._quizModel.type === quizModel_1.QUIZ_TYPES.MC || this._quizModel.type === quizModel_1.QUIZ_TYPES.SORT) {
             for (var x = 0; x < choices.length; x++) {
                 var c = choices[x];
-                var text = c.getElementsByTagName("textarea")[0].value;
-                var choice = new choice_1.Choice(x, text, null);
+                var textarea = c.getElementsByTagName("textarea")[0];
+                var text = textarea.value;
+                var choiceId = parseInt(textarea.getAttribute("data-choice-id")) || x;
+                var choice = new choice_1.Choice(choiceId, text, null);
                 choicesList.addChoice(choice);
             }
         }
@@ -3941,12 +3948,23 @@ var ChoiceAdapter = /** @class */ (function () {
         }
         return correct;
     };
-    ChoiceAdapter.prototype.createEditorElement = function (text, value, isChecked, is_disabled) {
+    ChoiceAdapter.prototype._createEditorElement = function (id, text, value, isChecked, is_disabled) {
         if (text === void 0) { text = ""; }
         if (value === void 0) { value = ""; }
         if (isChecked === void 0) { isChecked = false; }
         if (is_disabled === void 0) { is_disabled = false; }
         throw ("Not implemented");
+    };
+    ChoiceAdapter.prototype.createEditorElement = function (id, text, value, isChecked, is_disabled) {
+        if (id === void 0) { id = null; }
+        if (text === void 0) { text = ""; }
+        if (value === void 0) { value = ""; }
+        if (isChecked === void 0) { isChecked = false; }
+        if (is_disabled === void 0) { is_disabled = false; }
+        if (id === null || id === undefined) {
+            id = this._quizBodyDiv.children.length;
+        }
+        return this._createEditorElement(id, text, value, isChecked, is_disabled);
     };
     ChoiceAdapter.prototype.updateView = function () {
         throw new Error('Method not implemented.');
@@ -4110,11 +4128,11 @@ var MCAdapter = /** @class */ (function (_super) {
     function MCAdapter(mode, quizModel, element) {
         return _super.call(this, mode, quizModel, element) || this;
     }
-    MCAdapter.prototype.createEditorElement = function (text, value, isChecked) {
+    MCAdapter.prototype._createEditorElement = function (index, text, value, isChecked) {
         if (text === void 0) { text = ""; }
         if (value === void 0) { value = ""; }
         if (isChecked === void 0) { isChecked = false; }
-        var index = this._quizBodyDiv.children.length;
+        // let index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
         var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, "draggable": true, }, ["quiz-choice", "m-4"]);
         var row = utils_1.createElement("div", {}, ["row"]);
@@ -4150,10 +4168,13 @@ var MCAdapter = /** @class */ (function (_super) {
         this._quizBodyDiv.appendChild(choiceEle);
     };
     MCAdapter.prototype.updateView = function () {
-        for (var x = 0; x < this._quizModel.choicesList.length; x++) {
-            var text = this._quizModel.choicesList.getChoice(x).text;
-            var isCorrect = this._quizModel.correct.indexOf(x) != -1;
-            var isChecked = this._quizModel.answer.indexOf(x) != -1;
+        var choices = this._quizModel.choicesList;
+        for (var x = 0; x < choices.length; x++) {
+            var choice = choices.getChoice(x);
+            var text = choice.text;
+            var id = choice.id;
+            var isCorrect = this._quizModel.correct.indexOf(choice.id) != -1;
+            var isChecked = this._quizModel.answer.indexOf(choice.id) != -1;
             if (this._mode === quizHTML_1.HTML_MODE.ANSWER) {
                 this.createViewerElement(text, false, false, false, false);
             }
@@ -4161,7 +4182,7 @@ var MCAdapter = /** @class */ (function (_super) {
                 this.createViewerElement(text, isChecked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-                this.createEditorElement(text, "", isChecked);
+                this.createEditorElement(id, text, "", isChecked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, isChecked, isCorrect, true, true);
@@ -4441,11 +4462,11 @@ var SCAdapter = /** @class */ (function (_super) {
     function SCAdapter(mode, quizModel, element) {
         return _super.call(this, mode, quizModel, element) || this;
     }
-    SCAdapter.prototype.createEditorElement = function (text, value, is_checked) {
+    SCAdapter.prototype._createEditorElement = function (index, text, value, is_checked) {
         if (text === void 0) { text = ""; }
         if (value === void 0) { value = ""; }
         if (is_checked === void 0) { is_checked = false; }
-        var index = this._quizBodyDiv.children.length;
+        // let index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
         var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, "draggable": true, }, ["quiz-choice", "m-4"]);
         var row = utils_1.createElement("div", {}, ["row"]);
@@ -4492,7 +4513,7 @@ var SCAdapter = /** @class */ (function (_super) {
                 this.createViewerElement(text, is_checked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-                this.createEditorElement(text, "", is_correct);
+                this.createEditorElement(x, text, "", is_correct);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, is_checked, is_correct, true, true);
@@ -4564,35 +4585,43 @@ var utils_1 = __webpack_require__(/*! ../utils */ "./ts/utils.ts");
 var choiceAdapter_1 = __webpack_require__(/*! ./choiceAdapter */ "./ts/adapters/choiceAdapter.ts");
 var SORTAdapter = /** @class */ (function (_super) {
     __extends(SORTAdapter, _super);
+    // _uglifyId = {};
     function SORTAdapter(mode, quizModel, element) {
-        var _this = _super.call(this, mode, quizModel, element) || this;
-        _this._uglifyId = {};
-        return _this;
+        return _super.call(this, mode, quizModel, element) || this;
     }
-    SORTAdapter.prototype.createEditorElement = function (text) {
+    SORTAdapter.prototype._createEditorElement = function (id, text) {
         if (text === void 0) { text = ""; }
-        var index = this._quizBodyDiv.children.length;
-        var id = this._quizModel.id + "_choice_" + index;
+        // let id = this._quizModel.id + "_choice_" + index;
         var choiceEle = utils_1.createElement("div", {
-            "id": id,
-            "data-id": id,
+            "id": "choice-" + id,
+            "data-choice-id": id,
             "draggable": true,
         }, ["quiz-choice", "m-4"]);
         var row = utils_1.createElement("div", {}, ["row"]);
         this.appendDragDiv(row);
-        this.appendTextEditorDiv(0, row, text);
+        this.appendTextEditorDiv(id, row, text);
         this.appendDelDiv(row, choiceEle);
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
     };
-    SORTAdapter.prototype.createViewerElement = function (i, id, text, isDisabled, showCorrectAnswer) {
+    SORTAdapter.prototype.createEditorElement = function (id, text, value, isChecked, is_disabled) {
+        if (id === void 0) { id = null; }
+        if (text === void 0) { text = ""; }
+        if (value === void 0) { value = ""; }
+        if (isChecked === void 0) { isChecked = false; }
+        if (is_disabled === void 0) { is_disabled = false; }
+        if (id === null || id === undefined) {
+            id = Math.ceil(Math.random() * 1000);
+        }
+        return this._createEditorElement(id, text);
+    };
+    SORTAdapter.prototype.createViewerElement = function (id, text, isDisabled, showCorrectAnswer) {
         if (text === void 0) { text = ""; }
         if (isDisabled === void 0) { isDisabled = false; }
         if (showCorrectAnswer === void 0) { showCorrectAnswer = false; }
         var choiceEle = utils_1.createElement("div", {
-            "id": id,
-            "data-id": id,
             "draggable": !showCorrectAnswer,
+            "data-choice-id": id,
         }, ["quiz-choice", "m-4"], "cursor: grab");
         var row = utils_1.createElement("div", {}, ["row"]);
         if (showCorrectAnswer) {
@@ -4608,121 +4637,51 @@ var SORTAdapter = /** @class */ (function (_super) {
         if (isDisabled) {
             classes.push("text-muted");
         }
-        this.appendTextViewerDiv(i, row, text, {}, classes, "");
+        this.appendTextViewerDiv(id, row, text, {}, classes, "");
         if (showCorrectAnswer) {
-            var correct = [];
-            for (var x = 0; x < this._quizModel.choicesList.length; x++) {
-                correct.push(x);
-            }
-            this.appendCorrectDiv(row, true, correct[i] === this._quizModel.answer[i]);
+            var correct = this._quizModel.correct;
+            this.appendCorrectDiv(row, true, correct.indexOf(id) === this._quizModel.answer.indexOf(id));
         }
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
     };
     SORTAdapter.prototype.updateView = function () {
+        var _choices = this._quizModel.choicesList.choicesList.slice();
         if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
             for (var x = 0; x < this._quizModel.choicesList.length; x++) {
-                this.createEditorElement(this._quizModel.choicesList.getChoice(x).text);
+                var choice = this._quizModel.choicesList.getChoice(x);
+                this.createEditorElement(choice.id, choice.text);
             }
-            //this.create_sort_choice("");
         }
         else if (this._mode === quizHTML_1.HTML_MODE.ANSWER) {
-            var sorted = this._quizModel.choicesList.choicesList.slice();
-            // [c1,c2,c3 ]
-            for (var x = 0; x < sorted.length; x++) {
-                var id = utils_1.getRandomStr();
-                this._uglifyId[id] = x;
-            }
-            var choices = utils_1.shuffle(utils_1.shuffle(utils_1.shuffle(this._quizModel.choicesList.choicesList.slice())));
+            var choices = utils_1.shuffle(utils_1.shuffle(utils_1.shuffle(_choices)));
             for (var i = 0; i < choices.length; i++) {
-                var id = null;
-                var text = choices[i]["text"];
-                for (var z = 0; z < sorted.length; z++) {
-                    var s = sorted[z];
-                    if (s["text"] === text) {
-                        id = Object.keys(this._uglifyId)[z];
-                    }
-                }
-                this.createViewerElement(i, id, text);
+                var choice = choices[i];
+                this.createViewerElement(choice.id, choice.text);
             }
         }
         else if (this._mode === quizHTML_1.HTML_MODE.UPDATE_ANSWER) {
-            var sorted = this._quizModel.choicesList.choicesList.slice();
-            if (!this._quizModel.answer) {
-                this._quizModel.answer = [];
-            }
-            for (var x = 0; x < sorted.length; x++) {
-                var id = utils_1.getRandomStr();
-                this._uglifyId[id] = x;
-            }
-            // { rand:0, rand:1, rand: 2 }    
-            var unsorted = utils_1.shuffle(utils_1.shuffle(utils_1.shuffle(this._quizModel.choicesList.choicesList.slice())));
-            for (var i = 0; i < unsorted.length; i++) {
-                var id = null;
-                var text = null;
-                if (this._quizModel.answer.length == 0) {
-                    text = unsorted[i]["text"];
-                }
-                else {
-                    text = sorted[this._quizModel.answer[i]]["text"];
-                }
-                for (var z = 0; z < sorted.length; z++) {
-                    var s = sorted[z];
-                    if (s["text"] === text) {
-                        id = Object.keys(this._uglifyId)[z];
-                    }
-                }
-                this.createViewerElement(i, id, text);
+            var choices = utils_1.shuffle(utils_1.shuffle(utils_1.shuffle(this._quizModel.choicesList.choicesList.slice())));
+            for (var i = 0; i < choices.length; i++) {
+                var choice = choices[i];
+                this.createViewerElement(choice.id, choice.text);
             }
         }
         else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
-            var sorted = this._quizModel.choicesList.choicesList.slice();
-            var unsorted = utils_1.shuffle(utils_1.shuffle(utils_1.shuffle(this._quizModel.choicesList.choicesList.slice())));
             var answer = this._quizModel.answer;
-            if (!answer) {
-                this._quizModel.answer = [];
-            }
-            for (var x = 0; x < sorted.length; x++) {
-                if (answer.indexOf(x) === -1) {
-                    answer.push(x);
-                }
-            }
-            for (var x = 0; x < sorted.length; x++) {
-                var id = utils_1.getRandomStr();
-                this._uglifyId[id] = x;
-            }
-            var choices = sorted;
-            if (this._quizModel.answer.length === 0) {
-                choices = unsorted;
-            }
             for (var i = 0; i < answer.length; i++) {
-                var id = null;
-                var text = choices[i]["text"];
-                for (var z = 0; z < sorted.length; z++) {
-                    var s = sorted[z];
-                    if (s["text"] === text) {
-                        id = Object.keys(this._uglifyId)[z];
-                    }
-                }
-                this.createViewerElement(i, id, text, true, true);
+                var choice = this._quizModel.choicesList.getChoiceById(answer[i]);
+                this.createViewerElement(choice.id, choice.text, true, true);
             }
-            /* for (var i = 0; i < sorted.length; i++) {
-                let id = null;
-                let text = null;
-                if (this._quizModel.answer.length == 0) {
-                    text = unsorted[i]["text"]
-                } else {
-                    text = sorted[this._quizModel.answer[i]]["text"]
-                }
-                for (var z = 0; z < sorted.length; z++) {
-                    let s = sorted[z]
-                    if (s["text"] === text) {
-                        id = Object.keys(this.uglify_id)[z]
-                    }
-                }
-                this.create_sort_choice(id, text);
-            } */
         }
+    };
+    SORTAdapter.prototype.get_correct = function () {
+        var choices = this._quizModel.choicesList;
+        var rv = [];
+        for (var index = 0; index < choices.length; index++) {
+            rv.push(choices.getChoice(index).id);
+        }
+        return rv;
     };
     SORTAdapter.prototype.updateModel = function (quizModel) {
         this._quizModel = quizModel;
@@ -4730,20 +4689,15 @@ var SORTAdapter = /** @class */ (function (_super) {
         if (this._mode === quizHTML_1.HTML_MODE.ANSWER || this._mode === quizHTML_1.HTML_MODE.UPDATE_ANSWER) {
             var answer = [];
             for (var x = 0; x < choices.length; x++) {
-                var c = choices[x];
-                for (var x = 0; x < choices.length; x++) {
-                    var id = choices[x].getAttribute("id");
-                    answer.push(this._uglifyId[id]);
-                }
+                answer.push(parseInt(choices[x].getAttribute("data-choice-id")));
             }
             this._quizModel.answer = answer;
             return this._quizModel;
         }
         else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
             var choicesList = this.collectChoices();
-            //let correct = []//this.get_correct()
             this._quizModel.choicesList = choicesList;
-            this._quizModel.correct = []; //correct;
+            this._quizModel.correct = this.get_correct();
             return this._quizModel;
         }
     };
@@ -4793,11 +4747,11 @@ var TFAdapter = /** @class */ (function (_super) {
         }
         return _this;
     }
-    TFAdapter.prototype.createEditorElement = function (text, value, isChecked, is_disabled) {
+    TFAdapter.prototype._createEditorElement = function (index, text, value, isChecked, is_disabled) {
         if (text === void 0) { text = ""; }
         if (isChecked === void 0) { isChecked = false; }
         if (is_disabled === void 0) { is_disabled = false; }
-        var index = this._quizBodyDiv.children.length;
+        // let index = this._quizBodyDiv.children.length;
         var id = this._quizModel.id + "_choice_" + index;
         var choiceEle = utils_1.createElement("div", { "id": id, "data-id": id, "data-value": value }, //  "draggable": true,
         ["quiz-choice", "m-2", value]);
@@ -4855,7 +4809,7 @@ var TFAdapter = /** @class */ (function (_super) {
                 this.createViewerElement(text, val, isChecked);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.CREATE) {
-                this.createEditorElement(text, val, isCorrect);
+                this.createEditorElement(x, text, val, isCorrect);
             }
             else if (this._mode === quizHTML_1.HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, val, isChecked, isCorrect, true, true);
@@ -5839,6 +5793,41 @@ var QuizModel = /** @class */ (function () {
     };
     QuizModel.fromJson = function (json) {
         return QuizModel.fromDict(JSON.parse(json));
+    };
+    QuizModel.assess = function (model) {
+        // edge case where correct = []
+        if (model.correct.length === 0 && model.answer.length === 0) {
+            return 100;
+        }
+        if (model.type === exports.QUIZ_TYPES.SC || model.type === exports.QUIZ_TYPES.TF) {
+            if (model.answer[0] === model.correct[0]) {
+                return 100;
+            }
+            return 0;
+        }
+        else if (model.type === exports.QUIZ_TYPES.MC) {
+            var correct_answers_1 = 0;
+            model.choicesList.choicesList.forEach(function (choice) {
+                var id = choice.id;
+                if (model.correct.indexOf(id) !== -1 && model.answer.indexOf(id) !== -1) {
+                    correct_answers_1++;
+                }
+                else if (model.correct.indexOf(id) === -1 && model.answer.indexOf(id) === -1) {
+                    correct_answers_1++;
+                }
+            });
+            return 100 * (correct_answers_1 / model.choicesList.choicesList.length);
+        }
+        else if (model.type === exports.QUIZ_TYPES.SORT) {
+            var correct_answers_2 = 0;
+            model.choicesList.choicesList.forEach(function (choice) {
+                var id = choice.id;
+                if (model.correct.indexOf(id) === model.answer.indexOf(id)) {
+                    correct_answers_2++;
+                }
+            });
+            return 100 * (correct_answers_2 / model.choicesList.choicesList.length);
+        }
     };
     return QuizModel;
 }());

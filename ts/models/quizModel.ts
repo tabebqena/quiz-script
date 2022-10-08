@@ -386,4 +386,42 @@ export class QuizModel {
         return QuizModel.fromDict(JSON.parse(json))
     }
 
+    static assess(model: QuizModel) {
+        // edge case where correct = []
+        if (model.correct.length === 0 && model.answer.length === 0) {
+            return 100;
+        }
+
+        if (model.type === QUIZ_TYPES.SC || model.type === QUIZ_TYPES.TF) {
+            if (model.answer[0] === model.correct[0]) {
+                return 100;
+            }
+            return 0;
+        } else if (model.type === QUIZ_TYPES.MC) {
+            let correct_answers = 0;
+            model.choicesList.choicesList.forEach(
+                (choice) => {
+                    let id = choice.id
+                    if (model.correct.indexOf(id) !== -1 && model.answer.indexOf(id) !== -1) {
+                        correct_answers++;
+                    } else if (model.correct.indexOf(id) === -1 && model.answer.indexOf(id) === -1) {
+                        correct_answers++;
+                    }
+                }
+            )
+            return 100 * (correct_answers / model.choicesList.choicesList.length);
+        } else if (model.type === QUIZ_TYPES.SORT) {
+            let correct_answers = 0;
+            model.choicesList.choicesList.forEach(
+                (choice) => {
+                    let id = choice.id
+                    if (model.correct.indexOf(id) === model.answer.indexOf(id)) {
+                        correct_answers++;
+                    }
+                }
+            )
+            return 100 * (correct_answers / model.choicesList.choicesList.length);
+        }
+    }
+
 }

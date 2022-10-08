@@ -39,8 +39,18 @@ export class ChoiceAdapter {
         return selectDiv
     }
 
-    appendTextEditorDiv(index, row, text) {
-        let textSpan = createFormGroup(this._quizModel.id + "_choice_" + index, "Choice", "textarea", { "dir": "auto", }, "Choice " + index);
+    appendTextEditorDiv(index, row, text, help = true) {
+        let textSpan = createFormGroup(
+            this._quizModel.id + "_choice_" + index,
+            "Choice",
+            "textarea",
+            {
+                "dir": "auto",
+                "data-choice-id": index
+
+            },
+            help ? "Choice " + index : ""
+        );
         textSpan.classList.add("col-9");
 
         if (text) {
@@ -51,7 +61,8 @@ export class ChoiceAdapter {
 
     appendTextViewerDiv(index, row, text, attrs: object = {}, classes = [], style = "") {
         let textSpan = createElement("div", {
-            "id": this._quizModel.id + "_choice_" + index
+            "id": this._quizModel.id + "_choice_" + index,
+            "data-choice-id": index
         },
             [], "")
         for (var key in attrs) {
@@ -100,8 +111,11 @@ export class ChoiceAdapter {
         if (this._quizModel.type === QUIZ_TYPES.SC || this._quizModel.type === QUIZ_TYPES.MC || this._quizModel.type === QUIZ_TYPES.SORT) {
             for (var x = 0; x < choices.length; x++) {
                 let c = choices[x];
-                let text = c.getElementsByTagName("textarea")[0].value;
-                let choice = new Choice(x, text, null);
+                let textarea = c.getElementsByTagName("textarea")[0]
+                let text = textarea.value;
+
+                let choiceId = parseInt(textarea.getAttribute("data-choice-id")) || x
+                let choice = new Choice(choiceId, text, null);
                 choicesList.addChoice(choice);
             }
         }
@@ -126,8 +140,15 @@ export class ChoiceAdapter {
         return correct;
     }
 
-    createEditorElement(text: string = "", value: string = "", isChecked: boolean = false, is_disabled: boolean = false) {
+    _createEditorElement(id: number, text: string = "", value: string = "", isChecked: boolean = false, is_disabled: boolean = false) {
         throw ("Not implemented");
+    }
+
+    createEditorElement(id: number = null, text: string = "", value: string = "", isChecked: boolean = false, is_disabled: boolean = false) {
+        if (id === null || id === undefined) {
+            id = this._quizBodyDiv.children.length;
+        }
+        return this._createEditorElement(id, text, value, isChecked, is_disabled)
     }
 
     updateView() {

@@ -8,8 +8,8 @@ export class MCAdapter extends ChoiceAdapter {
         super(mode, quizModel, element);
     }
 
-    createEditorElement(text: string = "", value = "", isChecked: boolean = false) {
-        let index = this._quizBodyDiv.children.length;
+    _createEditorElement(index: number, text: string = "", value = "", isChecked: boolean = false) {
+        // let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
             { "id": id, "data-id": id, "draggable": true, },
@@ -54,17 +54,20 @@ export class MCAdapter extends ChoiceAdapter {
 
 
     updateView() {
-        for (var x = 0; x < this._quizModel.choicesList.length; x++) {
-            let text = this._quizModel.choicesList.getChoice(x).text;
-            let isCorrect = this._quizModel.correct.indexOf(x) != -1;
-            let isChecked = this._quizModel.answer.indexOf(x) != -1;
+        let choices = this._quizModel.choicesList;
+        for (var x = 0; x < choices.length; x++) {
+            let choice = choices.getChoice(x)
+            let text = choice.text;
+            let id = choice.id
+            let isCorrect = this._quizModel.correct.indexOf(choice.id) != -1;
+            let isChecked = this._quizModel.answer.indexOf(choice.id) != -1;
             if (this._mode === HTML_MODE.ANSWER) {
                 this.createViewerElement(text, false, false, false, false);
             } else if (this._mode === HTML_MODE.UPDATE_ANSWER) {
                 this.createViewerElement(text, isChecked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.createEditorElement(text, "", isChecked)
+                this.createEditorElement(id, text, "", isChecked)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, isChecked, isCorrect, true, true);
             }

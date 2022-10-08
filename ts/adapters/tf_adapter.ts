@@ -15,8 +15,8 @@ export class TFAdapter extends ChoiceAdapter {
     }
 
 
-    createEditorElement(text: string = "", value: string, isChecked: boolean = false, is_disabled: boolean = false) {
-        let index = this._quizBodyDiv.children.length;
+    _createEditorElement(index: number, text: string = "", value: string, isChecked: boolean = false, is_disabled: boolean = false) {
+        // let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
             { "id": id, "data-id": id, "data-value": value }, //  "draggable": true,
@@ -80,7 +80,7 @@ export class TFAdapter extends ChoiceAdapter {
                 this.createViewerElement(text, val, isChecked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.createEditorElement(text, val, isCorrect)
+                this.createEditorElement(x, text, val, isCorrect)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, val, isChecked, isCorrect, true, true);
             }
