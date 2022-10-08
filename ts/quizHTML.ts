@@ -104,8 +104,12 @@ export class QuizHTML {
     this._quizBodyDiv = (createElement("div", {}, ["quiz-body"]) as HTMLDivElement);
     this._element.appendChild(this._quizBodyDiv)
 
-    this._learningNotesBar = (createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px") as HTMLDivElement);
-    this._element.appendChild(this._learningNotesBar)
+    if (this.mode === HTML_MODE.SHOW_RESULT || this.mode === HTML_MODE.CREATE) {
+      this._learningNotesBar = (createElement("div", {}, ["col-12", "quiz-learning-notes"], "padding:5px") as HTMLDivElement);
+      this._element.appendChild(this._learningNotesBar)
+    }
+
+
     this._statusBar = createElement("p", {}, ["form-text", "text-center", "text-danger"])
     this._element.appendChild(this._statusBar)
   }

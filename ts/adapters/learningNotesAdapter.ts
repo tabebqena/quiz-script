@@ -20,10 +20,12 @@ export class LearningNotesAdapter {
             this._learningNotesBar.appendChild(this._lpTextarea)
 
         } else if (this._mode === HTML_MODE.SHOW_RESULT) {
-            let ele = createElement("div", {}, ["alert", "alert-info"], "width:100%")
-            ele.innerText = this._quizModel.learningNotes
-            this._learningNotesBar.appendChild(ele)
-
+            let text = this._quizModel.learningNotes
+            if (text !== undefined && text !== null && text !== "") {
+                let ele = createElement("div", {}, ["alert", "alert-info"], "width:100%")
+                ele.innerText = this._quizModel.learningNotes
+                this._learningNotesBar.appendChild(ele)
+            }
         }
     }
 
