@@ -110,27 +110,32 @@ export class TFAdapter extends ChoiceAdapter {
             this._quizModel.answer = answer;
             return this._quizModel;
         } else if (this._mode === HTML_MODE.CREATE) {
-            let correct = []
-            for (var x = 0; x < choices.length; x++) {
-                let c = choices[x];
-                let inputs = c.getElementsByTagName("input");
-                for (var i = 0; i < inputs.length; i++) {
-                    let input = inputs[i];
-                    if (input.getAttribute("role") === "choice-ctrl") {
-                        let val = input.getAttribute("data-value")
-                        if (input.checked && val === "true") {
-                            correct = [1]
-                        } else if (input.checked && val === "false") {
-                            correct = [0]
-                        }
-                    }
-                }
-            }
-            this._quizModel.correct = correct;
+
+            this._quizModel.correct = this.get_correct();
             this._quizModel.choicesList = this.collectChoices();;
             return this._quizModel;
         }
+    }
 
+    get_correct() {
+        let correct = []
+        let choices = this._quizBodyDiv.getElementsByClassName("quiz-choice");
+        for (var x = 0; x < choices.length; x++) {
+            let c = choices[x];
+            let inputs = c.getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {
+                let input = inputs[i];
+                if (input.getAttribute("role") === "choice-ctrl") {
+                    let val = input.getAttribute("data-value")
+                    if (input.checked && val === "true") {
+                        correct = [1]
+                    } else if (input.checked && val === "false") {
+                        correct = [0]
+                    }
+                }
+            }
+        }
+        return correct
     }
 
     collectChoices(): ChoicesList {
