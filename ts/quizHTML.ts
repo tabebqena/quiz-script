@@ -155,7 +155,7 @@ export class QuizHTML {
 
   addChoice() {
     if (this._quizModel.type !== QUIZ_TYPES.TF) {
-      this._choicesAdapter.appendEmptyChoice();
+      this._choicesAdapter.createEditorElement();
     } else {
       throw ("You can't add choice to True/False question");
     }

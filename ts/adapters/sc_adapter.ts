@@ -9,7 +9,7 @@ export class SCAdapter extends ChoiceAdapter {
     }
 
 
-    createEditorElement(text: string = "", is_checked: boolean = false) {
+    createEditorElement(text: string = "", value = "", is_checked: boolean = false) {
         let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
@@ -26,10 +26,6 @@ export class SCAdapter extends ChoiceAdapter {
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
 
-    }
-
-    appendEmptyChoice() {
-        this.createEditorElement()
     }
 
     createViewerElement(text: string = "", is_checked: boolean = false, is_correct: boolean = false, is_disabled: boolean = false, showCorrectAnswer: boolean = false) {
@@ -69,7 +65,7 @@ export class SCAdapter extends ChoiceAdapter {
                 this.createViewerElement(text, is_checked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.createEditorElement(text, is_correct)
+                this.createEditorElement(text, "", is_correct)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, is_checked, is_correct, true, true);
             }

@@ -10,7 +10,7 @@ export class SORTAdapter extends ChoiceAdapter {
     }
 
 
-    createEditorElement(text: string = "",) {
+    createEditorElement(text: string = "") {
         let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
@@ -67,12 +67,6 @@ export class SORTAdapter extends ChoiceAdapter {
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
     }
-
-
-    appendEmptyChoice() {
-        this.createEditorElement("")
-    }
-
 
 
     updateView() {

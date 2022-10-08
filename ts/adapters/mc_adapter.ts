@@ -7,7 +7,8 @@ export class MCAdapter extends ChoiceAdapter {
     constructor(mode: string, quizModel: QuizModel, element: HTMLDivElement) {
         super(mode, quizModel, element);
     }
-    createEditorElement(text: string = "", isChecked: boolean = false) {
+
+    createEditorElement(text: string = "", value = "", isChecked: boolean = false) {
         let index = this._quizBodyDiv.children.length;
         let id = this._quizModel.id + "_choice_" + index;
         let choiceEle = createElement("div",
@@ -23,11 +24,6 @@ export class MCAdapter extends ChoiceAdapter {
 
         choiceEle.appendChild(row);
         this._quizBodyDiv.appendChild(choiceEle);
-    }
-
-
-    appendEmptyChoice() {
-        this.createEditorElement()
     }
 
 
@@ -68,7 +64,7 @@ export class MCAdapter extends ChoiceAdapter {
                 this.createViewerElement(text, isChecked);
 
             } else if (this._mode === HTML_MODE.CREATE) {
-                this.createEditorElement(text, isChecked)
+                this.createEditorElement(text, "", isChecked)
             } else if (this._mode === HTML_MODE.SHOW_RESULT) {
                 this.createViewerElement(text, isChecked, isCorrect, true, true);
             }

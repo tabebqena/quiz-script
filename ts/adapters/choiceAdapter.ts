@@ -126,8 +126,8 @@ export class ChoiceAdapter {
         return correct;
     }
 
-    appendEmptyChoice(text = "",) {
-        throw "Not implemented Yet"
+    createEditorElement(text: string = "", value: string = "", isChecked: boolean = false, is_disabled: boolean = false) {
+        throw ("Not implemented");
     }
 
     updateView() {
