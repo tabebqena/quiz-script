@@ -42,7 +42,7 @@ export class SORTAdapter extends ChoiceAdapter {
         );
         let row = createElement("div", {}, ["row"],);
         if (showCorrectAnswer) {
-            this.appendDragDiv(row, ";color: gray")
+            this.appendDragDiv(row, "color: gray")
         } else {
             this.appendDragDiv(row,)
         }
