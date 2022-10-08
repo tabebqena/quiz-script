@@ -17,7 +17,7 @@ export class ChoiceAdapter {
 
     appendDragDiv(element, cssText: string = "") {
         let dragDiv = createElement("div", {}, ["col-1",]);
-        let dragSign_ = createElement("span", {}, ["fa", "fa-grip-vertical",]);
+        let dragSign_ = createElement("span", {}, ["fa", "fa-sort",]);
         dragSign_.style.cssText = "margin: 0; position: relative;        top: 50%; left: 50%; -ms-transform: translate(50%, -50%);transform: translate(50%,-50%); font-size:25px" + ";" + cssText;
         dragDiv.appendChild(dragSign_);
         element.appendChild(dragDiv);
