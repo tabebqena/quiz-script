@@ -82,9 +82,14 @@ export class ChoiceAdapter {
     appendCorrectDiv(row, isChecked, isCorrect) {
         let correctDiv = createElement("div", {}, ["col-1"],);
         if (isCorrect) {
-            correctDiv.innerHTML = "<i class='fa fa-check' style=' font-size:1.5rem; color: aqua'></i>"
-        } else if (isChecked) {
-            correctDiv.innerHTML = "<i class='fa fa-close'  style=' font-size:1.5rem; color: red'></i>"
+            row.classList.add("bg-success", "bg-opacity-10",);
+        }
+        if (isCorrect && isChecked) {
+            correctDiv.innerHTML = "<i class='fa fa-check' style=' font-size:1rem; color: aqua'></i>"
+        } else if (isChecked && !isCorrect) {
+            correctDiv.innerHTML = "<i class='fa fa-close'  style=' font-size:1rem; color: red'></i>"
+        } else if (isCorrect && !isChecked) {
+            correctDiv.innerHTML = "<i class='fa fa-circle-o'  style=' font-size:1rem; color: palevioletred'></i>"
         }
         row.appendChild(correctDiv);
     }
